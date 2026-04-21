@@ -147,6 +147,18 @@ Incluye:
 - Racha de días completados.
 - Bloc de notas por día.
 
+### v1.3 - Modo oscuro premium
+
+Cuarta versión de la app.
+
+Incluye:
+
+- Modo oscuro premium.
+- Botón para cambiar entre modo claro y oscuro.
+- Preferencia de tema guardada en el navegador.
+- Mejora visual nocturna con tonos cálidos, café oscuro y dorado suave.
+- Mantiene sonidos, respaldo, navegación por días, racha, cronómetro y bloc de notas.
+  
 ## Cómo actualizar la app
 
 Para actualizar la app publicada en GitHub Pages:
