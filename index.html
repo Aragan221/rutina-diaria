@@ -572,6 +572,55 @@
       box-shadow: 0 12px 30px rgba(90, 63, 35, 0.08);
     }
 
+    .backup-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .backup-btn,
+    .import-btn {
+      width: 100%;
+      border: none;
+      padding: 14px 16px;
+      border-radius: 18px;
+      font-weight: 850;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.25s ease, background 0.25s ease, opacity 0.25s ease;
+    }
+
+    .backup-btn:hover,
+    .import-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .backup-btn {
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--accent-dark);
+      border: 1px solid rgba(200, 159, 114, 0.18);
+      box-shadow: 0 12px 30px rgba(90, 63, 35, 0.08);
+    }
+
+    .import-btn {
+      background: rgba(234, 216, 195, 0.88);
+      color: var(--accent-dark);
+      border: 1px solid rgba(200, 159, 114, 0.18);
+      box-shadow: 0 12px 30px rgba(90, 63, 35, 0.08);
+    }
+
+    .backup-note {
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.4;
+      text-align: center;
+      margin-top: -4px;
+    }
+
+    .file-input-hidden {
+      display: none;
+    }
+
     footer {
       text-align: center;
       color: var(--muted);
@@ -654,6 +703,10 @@
         align-items: flex-start;
         gap: 10px;
         flex-direction: column;
+      }
+
+      .backup-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -877,6 +930,22 @@
       <button class="reset-btn" id="resetBtn">
         Reiniciar solo este día
       </button>
+
+      <div class="backup-grid">
+        <button class="backup-btn" id="exportBtn">
+          Exportar respaldo
+        </button>
+
+        <button class="import-btn" id="importBtn">
+          Importar respaldo
+        </button>
+      </div>
+
+      <input class="file-input-hidden" type="file" id="importFile" accept="application/json,.json" />
+
+      <p class="backup-note">
+        El respaldo descarga tus días, notas, racha, cronómetros y preferencias de sonido en un archivo JSON.
+      </p>
     </section>
 
     <footer>
@@ -895,6 +964,7 @@
       - Racha calculada desde el día seleccionado hacia atrás.
       - Sonidos suaves generados por código, sin archivos mp3.
       - Botón para activar/desactivar sonidos.
+      - Exportar e importar respaldo en JSON.
       - Guardado local con localStorage.
     */
 
@@ -920,6 +990,9 @@
     const prevDayBtn = document.getElementById('prevDayBtn');
     const nextDayArrowBtn = document.getElementById('nextDayArrowBtn');
     const soundToggle = document.getElementById('soundToggle');
+    const exportBtn = document.getElementById('exportBtn');
+    const importBtn = document.getElementById('importBtn');
+    const importFile = document.getElementById('importFile');
 
     const currentDateLabel = document.getElementById('currentDateLabel');
     const dayStatus = document.getElementById('dayStatus');
@@ -995,7 +1068,126 @@
       const dayData = allData[selectedDate] || getEmptyDayData();
 
       dayData.tasks = {};
-      checkboxes.forEach((checkbox) => {
+  
+    function exportBackup() {
+      saveCurrentDay();
+
+      const allData = getAllData();
+
+      const backup = {
+        app: 'Rutina Diaria - Enfoque y Disciplina',
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        selectedDate,
+        soundsEnabled,
+        data: allData
+      };
+
+      const json = JSON.stringify(backup, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+
+      const dateForName = getTodayString();
+      const link = document.createElement('a');
+
+      link.href = url;
+      link.download = `respaldo-rutina-diaria-${dateForName}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+
+      playButtonSound();
+      showSavedStatus('Respaldo exportado');
+    }
+
+    function openImportPicker() {
+      playButtonSound();
+      importFile.value = '';
+      importFile.click();
+    }
+
+    function importBackupFile(event) {
+      const file = event.target.files[0];
+
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = function () {
+        try {
+          const parsed = JSON.parse(reader.result);
+
+          let importedData = null;
+          let importedSelectedDate = null;
+          let importedSoundsEnabled = null;
+
+          /*
+            Formato nuevo:
+            {
+              app, version, exportedAt, selectedDate, soundsEnabled, data
+            }
+
+            También acepta un JSON antiguo que sea directamente el objeto de fechas.
+          */
+          if (parsed && parsed.data && typeof parsed.data === 'object') {
+            importedData = parsed.data;
+            importedSelectedDate = parsed.selectedDate || null;
+            importedSoundsEnabled = parsed.soundsEnabled;
+          } else if (parsed && typeof parsed === 'object') {
+            importedData = parsed;
+          }
+
+          if (!importedData || Array.isArray(importedData)) {
+            throw new Error('Formato inválido');
+          }
+
+          const shouldReplace = confirm(
+            '¿Quieres importar este respaldo? Esto reemplazará los datos guardados actualmente en esta app.'
+          );
+
+          if (!shouldReplace) {
+            showSavedStatus('Importación cancelada');
+            return;
+          }
+
+          saveAllData(importedData);
+
+          if (typeof importedSoundsEnabled === 'boolean') {
+            soundsEnabled = importedSoundsEnabled;
+            localStorage.setItem(SOUND_KEY, soundsEnabled);
+            updateSoundButton();
+          }
+
+          if (importedSelectedDate && importedData[importedSelectedDate]) {
+            selectedDate = importedSelectedDate;
+          } else if (importedData[getTodayString()]) {
+            selectedDate = getTodayString();
+          } else {
+            const importedDates = Object.keys(importedData).sort();
+
+            if (importedDates.length > 0) {
+              selectedDate = importedDates[importedDates.length - 1];
+            } else {
+              selectedDate = getTodayString();
+            }
+          }
+
+          loadSelectedDay();
+          playCompleteSound();
+          showSavedStatus('Respaldo importado');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch (error) {
+          alert('No se pudo importar el respaldo. Revisa que sea un archivo JSON válido de esta app.');
+          showSavedStatus('Error al importar');
+        }
+      };
+
+      reader.readAsText(file);
+    }
+
+    checkboxes.forEach((checkbox) => {
         dayData.tasks[checkbox.dataset.task] = checkbox.checked;
       });
 
@@ -1017,7 +1209,126 @@
 
       const dayData = getDayData(selectedDate);
 
-      checkboxes.forEach((checkbox) => {
+  
+    function exportBackup() {
+      saveCurrentDay();
+
+      const allData = getAllData();
+
+      const backup = {
+        app: 'Rutina Diaria - Enfoque y Disciplina',
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        selectedDate,
+        soundsEnabled,
+        data: allData
+      };
+
+      const json = JSON.stringify(backup, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+
+      const dateForName = getTodayString();
+      const link = document.createElement('a');
+
+      link.href = url;
+      link.download = `respaldo-rutina-diaria-${dateForName}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+
+      playButtonSound();
+      showSavedStatus('Respaldo exportado');
+    }
+
+    function openImportPicker() {
+      playButtonSound();
+      importFile.value = '';
+      importFile.click();
+    }
+
+    function importBackupFile(event) {
+      const file = event.target.files[0];
+
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = function () {
+        try {
+          const parsed = JSON.parse(reader.result);
+
+          let importedData = null;
+          let importedSelectedDate = null;
+          let importedSoundsEnabled = null;
+
+          /*
+            Formato nuevo:
+            {
+              app, version, exportedAt, selectedDate, soundsEnabled, data
+            }
+
+            También acepta un JSON antiguo que sea directamente el objeto de fechas.
+          */
+          if (parsed && parsed.data && typeof parsed.data === 'object') {
+            importedData = parsed.data;
+            importedSelectedDate = parsed.selectedDate || null;
+            importedSoundsEnabled = parsed.soundsEnabled;
+          } else if (parsed && typeof parsed === 'object') {
+            importedData = parsed;
+          }
+
+          if (!importedData || Array.isArray(importedData)) {
+            throw new Error('Formato inválido');
+          }
+
+          const shouldReplace = confirm(
+            '¿Quieres importar este respaldo? Esto reemplazará los datos guardados actualmente en esta app.'
+          );
+
+          if (!shouldReplace) {
+            showSavedStatus('Importación cancelada');
+            return;
+          }
+
+          saveAllData(importedData);
+
+          if (typeof importedSoundsEnabled === 'boolean') {
+            soundsEnabled = importedSoundsEnabled;
+            localStorage.setItem(SOUND_KEY, soundsEnabled);
+            updateSoundButton();
+          }
+
+          if (importedSelectedDate && importedData[importedSelectedDate]) {
+            selectedDate = importedSelectedDate;
+          } else if (importedData[getTodayString()]) {
+            selectedDate = getTodayString();
+          } else {
+            const importedDates = Object.keys(importedData).sort();
+
+            if (importedDates.length > 0) {
+              selectedDate = importedDates[importedDates.length - 1];
+            } else {
+              selectedDate = getTodayString();
+            }
+          }
+
+          loadSelectedDay();
+          playCompleteSound();
+          showSavedStatus('Respaldo importado');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch (error) {
+          alert('No se pudo importar el respaldo. Revisa que sea un archivo JSON válido de esta app.');
+          showSavedStatus('Error al importar');
+        }
+      };
+
+      reader.readAsText(file);
+    }
+
+    checkboxes.forEach((checkbox) => {
         const taskId = checkbox.dataset.task;
         checkbox.checked = Boolean(dayData.tasks[taskId]);
         updateTaskVisual(checkbox);
@@ -1157,7 +1468,126 @@
     function resetCurrentDay() {
       stopTimer(false);
 
-      checkboxes.forEach((checkbox) => {
+  
+    function exportBackup() {
+      saveCurrentDay();
+
+      const allData = getAllData();
+
+      const backup = {
+        app: 'Rutina Diaria - Enfoque y Disciplina',
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        selectedDate,
+        soundsEnabled,
+        data: allData
+      };
+
+      const json = JSON.stringify(backup, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+
+      const dateForName = getTodayString();
+      const link = document.createElement('a');
+
+      link.href = url;
+      link.download = `respaldo-rutina-diaria-${dateForName}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+
+      playButtonSound();
+      showSavedStatus('Respaldo exportado');
+    }
+
+    function openImportPicker() {
+      playButtonSound();
+      importFile.value = '';
+      importFile.click();
+    }
+
+    function importBackupFile(event) {
+      const file = event.target.files[0];
+
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = function () {
+        try {
+          const parsed = JSON.parse(reader.result);
+
+          let importedData = null;
+          let importedSelectedDate = null;
+          let importedSoundsEnabled = null;
+
+          /*
+            Formato nuevo:
+            {
+              app, version, exportedAt, selectedDate, soundsEnabled, data
+            }
+
+            También acepta un JSON antiguo que sea directamente el objeto de fechas.
+          */
+          if (parsed && parsed.data && typeof parsed.data === 'object') {
+            importedData = parsed.data;
+            importedSelectedDate = parsed.selectedDate || null;
+            importedSoundsEnabled = parsed.soundsEnabled;
+          } else if (parsed && typeof parsed === 'object') {
+            importedData = parsed;
+          }
+
+          if (!importedData || Array.isArray(importedData)) {
+            throw new Error('Formato inválido');
+          }
+
+          const shouldReplace = confirm(
+            '¿Quieres importar este respaldo? Esto reemplazará los datos guardados actualmente en esta app.'
+          );
+
+          if (!shouldReplace) {
+            showSavedStatus('Importación cancelada');
+            return;
+          }
+
+          saveAllData(importedData);
+
+          if (typeof importedSoundsEnabled === 'boolean') {
+            soundsEnabled = importedSoundsEnabled;
+            localStorage.setItem(SOUND_KEY, soundsEnabled);
+            updateSoundButton();
+          }
+
+          if (importedSelectedDate && importedData[importedSelectedDate]) {
+            selectedDate = importedSelectedDate;
+          } else if (importedData[getTodayString()]) {
+            selectedDate = getTodayString();
+          } else {
+            const importedDates = Object.keys(importedData).sort();
+
+            if (importedDates.length > 0) {
+              selectedDate = importedDates[importedDates.length - 1];
+            } else {
+              selectedDate = getTodayString();
+            }
+          }
+
+          loadSelectedDay();
+          playCompleteSound();
+          showSavedStatus('Respaldo importado');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch (error) {
+          alert('No se pudo importar el respaldo. Revisa que sea un archivo JSON válido de esta app.');
+          showSavedStatus('Error al importar');
+        }
+      };
+
+      reader.readAsText(file);
+    }
+
+    checkboxes.forEach((checkbox) => {
         checkbox.checked = false;
         updateTaskVisual(checkbox);
       });
@@ -1313,6 +1743,125 @@
       playTone(840, 0.12, 'sine', 0.06, 0.19);
     }
 
+
+    function exportBackup() {
+      saveCurrentDay();
+
+      const allData = getAllData();
+
+      const backup = {
+        app: 'Rutina Diaria - Enfoque y Disciplina',
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        selectedDate,
+        soundsEnabled,
+        data: allData
+      };
+
+      const json = JSON.stringify(backup, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+
+      const dateForName = getTodayString();
+      const link = document.createElement('a');
+
+      link.href = url;
+      link.download = `respaldo-rutina-diaria-${dateForName}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+
+      playButtonSound();
+      showSavedStatus('Respaldo exportado');
+    }
+
+    function openImportPicker() {
+      playButtonSound();
+      importFile.value = '';
+      importFile.click();
+    }
+
+    function importBackupFile(event) {
+      const file = event.target.files[0];
+
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = function () {
+        try {
+          const parsed = JSON.parse(reader.result);
+
+          let importedData = null;
+          let importedSelectedDate = null;
+          let importedSoundsEnabled = null;
+
+          /*
+            Formato nuevo:
+            {
+              app, version, exportedAt, selectedDate, soundsEnabled, data
+            }
+
+            También acepta un JSON antiguo que sea directamente el objeto de fechas.
+          */
+          if (parsed && parsed.data && typeof parsed.data === 'object') {
+            importedData = parsed.data;
+            importedSelectedDate = parsed.selectedDate || null;
+            importedSoundsEnabled = parsed.soundsEnabled;
+          } else if (parsed && typeof parsed === 'object') {
+            importedData = parsed;
+          }
+
+          if (!importedData || Array.isArray(importedData)) {
+            throw new Error('Formato inválido');
+          }
+
+          const shouldReplace = confirm(
+            '¿Quieres importar este respaldo? Esto reemplazará los datos guardados actualmente en esta app.'
+          );
+
+          if (!shouldReplace) {
+            showSavedStatus('Importación cancelada');
+            return;
+          }
+
+          saveAllData(importedData);
+
+          if (typeof importedSoundsEnabled === 'boolean') {
+            soundsEnabled = importedSoundsEnabled;
+            localStorage.setItem(SOUND_KEY, soundsEnabled);
+            updateSoundButton();
+          }
+
+          if (importedSelectedDate && importedData[importedSelectedDate]) {
+            selectedDate = importedSelectedDate;
+          } else if (importedData[getTodayString()]) {
+            selectedDate = getTodayString();
+          } else {
+            const importedDates = Object.keys(importedData).sort();
+
+            if (importedDates.length > 0) {
+              selectedDate = importedDates[importedDates.length - 1];
+            } else {
+              selectedDate = getTodayString();
+            }
+          }
+
+          loadSelectedDay();
+          playCompleteSound();
+          showSavedStatus('Respaldo importado');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch (error) {
+          alert('No se pudo importar el respaldo. Revisa que sea un archivo JSON válido de esta app.');
+          showSavedStatus('Error al importar');
+        }
+      };
+
+      reader.readAsText(file);
+    }
+
     checkboxes.forEach((checkbox) => {
       checkbox.addEventListener('change', () => {
         updateTaskVisual(checkbox);
@@ -1372,6 +1921,10 @@
         showSavedStatus('Sonidos desactivados');
       }
     });
+
+    exportBtn.addEventListener('click', exportBackup);
+    importBtn.addEventListener('click', openImportPicker);
+    importFile.addEventListener('change', importBackupFile);
 
     window.addEventListener('beforeunload', () => {
       saveCurrentDay();
