@@ -20,6 +20,24 @@
       --danger: #b56b5d;
       --shadow: 0 22px 55px rgba(90, 63, 35, 0.13);
       --radius: 28px;
+      --body-gradient-1: #fff8ef;
+      --body-gradient-2: #ead0b6;
+    }
+
+    body[data-theme="dark"] {
+      --bg: #15100c;
+      --card: rgba(35, 28, 23, 0.78);
+      --card-strong: rgba(45, 36, 29, 0.94);
+      --text: #f8eadc;
+      --muted: #b8a899;
+      --accent: #d7a86f;
+      --accent-dark: #f1c895;
+      --accent-soft: rgba(215, 168, 111, 0.18);
+      --green: #9fbd99;
+      --danger: #d18c7e;
+      --shadow: 0 22px 60px rgba(0, 0, 0, 0.35);
+      --body-gradient-1: rgba(108, 77, 49, 0.34);
+      --body-gradient-2: rgba(42, 31, 24, 0.78);
     }
 
     * {
@@ -37,10 +55,11 @@
       min-height: 100vh;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
       background:
-        radial-gradient(circle at top left, #fff8ef 0%, transparent 34%),
-        radial-gradient(circle at bottom right, #ead0b6 0%, transparent 36%),
+        radial-gradient(circle at top left, var(--body-gradient-1) 0%, transparent 34%),
+        radial-gradient(circle at bottom right, var(--body-gradient-2) 0%, transparent 36%),
         var(--bg);
       color: var(--text);
+      transition: background 0.35s ease, color 0.35s ease;
       padding: 24px;
       padding-bottom: calc(24px + env(safe-area-inset-bottom));
     }
@@ -69,6 +88,12 @@
       margin-bottom: 22px;
     }
 
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     .top-pill {
       display: inline-flex;
       align-items: center;
@@ -93,7 +118,8 @@
       box-shadow: 0 0 0 5px rgba(200, 159, 114, 0.18);
     }
 
-    .sound-toggle {
+    .sound-toggle,
+    .theme-toggle {
       border: none;
       min-width: 44px;
       height: 44px;
@@ -110,9 +136,65 @@
       transition: transform 0.25s ease, background 0.25s ease;
     }
 
-    .sound-toggle:hover {
+    .sound-toggle:hover,
+    .theme-toggle:hover {
       transform: translateY(-2px);
-      background: rgba(255, 255, 255, 0.92);
+      background: var(--card-strong);
+    }
+
+    body[data-theme="dark"] .top-pill,
+    body[data-theme="dark"] .sound-toggle,
+    body[data-theme="dark"] .theme-toggle,
+    body[data-theme="dark"] .arrow-btn,
+    body[data-theme="dark"] .date-card {
+      background: rgba(39, 31, 25, 0.76);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    body[data-theme="dark"] .task {
+      background: rgba(255, 255, 255, 0.055);
+      border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    body[data-theme="dark"] .task:hover {
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    body[data-theme="dark"] .task.completed {
+      background: rgba(215, 168, 111, 0.13);
+    }
+
+    body[data-theme="dark"] textarea {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(215, 168, 111, 0.24);
+    }
+
+    body[data-theme="dark"] textarea:focus {
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 0 5px rgba(215, 168, 111, 0.14);
+    }
+
+    body[data-theme="dark"] .progress-bar {
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    body[data-theme="dark"] .soft-btn,
+    body[data-theme="dark"] .today-btn,
+    body[data-theme="dark"] .backup-btn,
+    body[data-theme="dark"] .import-btn {
+      background: rgba(215, 168, 111, 0.16);
+      color: var(--accent-dark);
+      border: 1px solid rgba(215, 168, 111, 0.12);
+    }
+
+    body[data-theme="dark"] .reset-btn {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--danger);
+      border-color: rgba(209, 140, 126, 0.16);
+    }
+
+    body[data-theme="dark"] .message {
+      background: linear-gradient(135deg, rgba(62, 48, 36, 0.92), rgba(38, 30, 24, 0.92));
     }
 
     header {
@@ -667,9 +749,14 @@
         padding: 10px 14px;
       }
 
-      .sound-toggle {
+      .sound-toggle,
+      .theme-toggle {
         min-width: 44px;
         padding: 0 12px;
+      }
+
+      .top-actions {
+        gap: 8px;
       }
 
       .stats-grid {
@@ -721,9 +808,15 @@
         No rompas la cadena
       </div>
 
-      <button class="sound-toggle" id="soundToggle" aria-label="Activar o desactivar sonidos">
-        🔊
-      </button>
+      <div class="top-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Activar modo oscuro">
+          🌙
+        </button>
+
+        <button class="sound-toggle" id="soundToggle" aria-label="Activar o desactivar sonidos">
+          🔊
+        </button>
+      </div>
     </div>
 
     <header>
@@ -990,6 +1083,7 @@
     const prevDayBtn = document.getElementById('prevDayBtn');
     const nextDayArrowBtn = document.getElementById('nextDayArrowBtn');
     const soundToggle = document.getElementById('soundToggle');
+    const themeToggle = document.getElementById('themeToggle');
     const exportBtn = document.getElementById('exportBtn');
     const importBtn = document.getElementById('importBtn');
     const importFile = document.getElementById('importFile');
@@ -997,8 +1091,9 @@
     const currentDateLabel = document.getElementById('currentDateLabel');
     const dayStatus = document.getElementById('dayStatus');
 
-    const STORAGE_KEY = 'rutinaDiariaPremiumPorFechasV4';
+    const STORAGE_KEY = 'rutinaDiariaPremiumPorFechasV5';
     const SOUND_KEY = 'rutinaDiariaSonidosActivosV1';
+    const THEME_KEY = 'rutinaDiariaTemaPremiumV1';
 
     let selectedDate = getTodayString();
     let timerInterval = null;
@@ -1006,6 +1101,7 @@
     let noteSaveTimeout = null;
     let audioContext = null;
     let soundsEnabled = localStorage.getItem(SOUND_KEY) !== 'false';
+    let currentTheme = localStorage.getItem(THEME_KEY) || 'light';
 
     function getTodayString() {
       return formatDateKey(new Date());
@@ -1668,6 +1764,33 @@
       }, 350);
     }
 
+    function applyTheme() {
+      document.body.setAttribute('data-theme', currentTheme);
+
+      if (currentTheme === 'dark') {
+        themeToggle.textContent = '☀️';
+        themeToggle.title = 'Cambiar a modo claro';
+        themeToggle.setAttribute('aria-label', 'Cambiar a modo claro');
+      } else {
+        themeToggle.textContent = '🌙';
+        themeToggle.title = 'Cambiar a modo oscuro';
+        themeToggle.setAttribute('aria-label', 'Cambiar a modo oscuro');
+      }
+    }
+
+    function toggleTheme() {
+      currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem(THEME_KEY, currentTheme);
+      applyTheme();
+      playButtonSound();
+
+      if (currentTheme === 'dark') {
+        showSavedStatus('Modo oscuro activado');
+      } else {
+        showSavedStatus('Modo claro activado');
+      }
+    }
+
     /*
       Sonidos generados con Web Audio API.
       No se necesitan archivos .mp3.
@@ -1909,6 +2032,8 @@
 
     resetBtn.addEventListener('click', resetCurrentDay);
 
+    themeToggle.addEventListener('click', toggleTheme);
+
     soundToggle.addEventListener('click', () => {
       soundsEnabled = !soundsEnabled;
       localStorage.setItem(SOUND_KEY, soundsEnabled);
@@ -1930,6 +2055,7 @@
       saveCurrentDay();
     });
 
+    applyTheme();
     updateSoundButton();
     loadSelectedDay();
   </script>
