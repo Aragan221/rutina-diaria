@@ -1,6 +1,6 @@
 # Rutina Diaria - Enfoque y Disciplina
 
-Mini app web personal para gestionar rutina diaria, hábitos, notas, cronómetro, sonidos, progreso y respaldo de información.
+Mini app web personal para gestionar rutina diaria, hábitos, notas, cronómetro, sonidos, progreso, modo oscuro y respaldo de información.
 
 ## App publicada
 
@@ -14,7 +14,7 @@ https://aragan221.github.io/rutina-diaria/
 
 La app permite llevar seguimiento de tareas diarias, escribir reflexiones personales, medir tiempo de enfoque con cronómetro y conservar una racha de días completados.
 
-El diseño está inspirado en una interfaz limpia tipo app móvil, con colores suaves, tarjetas redondeadas, animaciones ligeras y una experiencia pensada para usarse desde celular.
+El diseño está inspirado en una interfaz limpia tipo app móvil, con colores suaves, tarjetas redondeadas, animaciones ligeras, sonidos sutiles y una experiencia pensada para usarse desde celular.
 
 ## Objetivo del proyecto
 
@@ -39,10 +39,12 @@ Cada día queda guardado de forma independiente, permitiendo revisar días anter
 - Guardado automático en el navegador.
 - Sonidos suaves de interacción.
 - Botón para activar o desactivar sonidos.
+- Modo claro y modo oscuro premium.
+- Preferencia de tema guardada en el navegador.
 - Exportar respaldo en archivo JSON.
 - Importar respaldo para recuperar información.
 - Diseño responsive tipo app móvil.
-- Interfaz minimalista con estilo cálido y moderno.
+- Interfaz minimalista con estilo cálido, moderno y elegante.
 
 ## Rutina incluida
 
@@ -76,6 +78,7 @@ Este respaldo puede incluir:
 - Notas escritas.
 - Cronómetros.
 - Preferencias de sonido.
+- Preferencia de tema.
 - Progreso guardado.
 
 También permite importar ese archivo para recuperar la información en caso de cambiar de navegador, dispositivo o borrar los datos locales.
@@ -158,7 +161,7 @@ Incluye:
 - Preferencia de tema guardada en el navegador.
 - Mejora visual nocturna con tonos cálidos, café oscuro y dorado suave.
 - Mantiene sonidos, respaldo, navegación por días, racha, cronómetro y bloc de notas.
-  
+
 ## Cómo actualizar la app
 
 Para actualizar la app publicada en GitHub Pages:
@@ -179,7 +182,8 @@ Ejemplos:
 ```text
 v1.1 - agregar sonidos a la app
 v1.2 - agregar exportar e importar respaldo
-actualizar README del proyecto
+v1.3 - agregar modo oscuro premium
+actualizar README para v1.3
 corregir racha de días
 mejorar diseño móvil
 ```
@@ -188,7 +192,6 @@ mejorar diseño móvil
 
 Posibles mejoras para próximas versiones:
 
-- Modo oscuro.
 - Estadísticas semanales.
 - Selector de fecha tipo calendario.
 - Modo Pomodoro.
@@ -198,12 +201,15 @@ Posibles mejoras para próximas versiones:
 - Personalización de tareas.
 - Icono personalizado para pantalla de inicio.
 - Conversión a PWA.
+- Mejoras adicionales de diseño y experiencia móvil.
 
 ## Estado del proyecto
 
 Proyecto activo y en mejora continua.
 
 Actualmente la app cuenta con una versión funcional publicada mediante GitHub Pages.
+
+La versión más reciente es **v1.3 - Modo oscuro premium**.
 
 ## Nota personal
 
