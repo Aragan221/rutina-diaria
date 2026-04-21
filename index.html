@@ -61,6 +61,14 @@
       animation: fadeIn 0.7s ease;
     }
 
+    .top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
     .top-pill {
       display: inline-flex;
       align-items: center;
@@ -74,7 +82,7 @@
       font-size: 14px;
       color: var(--accent-dark);
       font-weight: 750;
-      margin-bottom: 22px;
+      white-space: nowrap;
     }
 
     .chain-dot {
@@ -83,6 +91,28 @@
       background: var(--accent);
       border-radius: 50%;
       box-shadow: 0 0 0 5px rgba(200, 159, 114, 0.18);
+    }
+
+    .sound-toggle {
+      border: none;
+      min-width: 44px;
+      height: 44px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.68);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 10px 30px rgba(80, 55, 30, 0.08);
+      color: var(--accent-dark);
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 850;
+      transition: transform 0.25s ease, background 0.25s ease;
+    }
+
+    .sound-toggle:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.92);
     }
 
     header {
@@ -579,6 +609,20 @@
         padding-bottom: calc(18px + env(safe-area-inset-bottom));
       }
 
+      .top-row {
+        align-items: stretch;
+      }
+
+      .top-pill {
+        font-size: 13px;
+        padding: 10px 14px;
+      }
+
+      .sound-toggle {
+        min-width: 44px;
+        padding: 0 12px;
+      }
+
       .stats-grid {
         grid-template-columns: 1fr;
       }
@@ -618,9 +662,15 @@
 <body>
   <main class="app">
 
-    <div class="top-pill">
-      <span class="chain-dot"></span>
-      No rompas la cadena
+    <div class="top-row">
+      <div class="top-pill">
+        <span class="chain-dot"></span>
+        No rompas la cadena
+      </div>
+
+      <button class="sound-toggle" id="soundToggle" aria-label="Activar o desactivar sonidos">
+        🔊
+      </button>
     </div>
 
     <header>
@@ -837,14 +887,15 @@
 
   <script>
     /*
-      Rutina diaria tipo mini app - versión corregida
+      Rutina diaria tipo mini app - versión con sonidos
 
-      Mejoras:
-      - La racha ahora se calcula desde el día seleccionado hacia atrás.
-        Así puedes probar Día 1, Día 2, Día 3 y ver cómo acumula.
-      - Cada día guarda tareas, notas y cronómetro por separado.
-      - Los campos de texto quedan libres para escribir en iPhone y navegador.
-      - El guardado de notas usa debounce para no interrumpir la escritura.
+      Funciones:
+      - Cada fecha guarda su propio registro.
+      - Tareas, notas y cronómetro son independientes por día.
+      - Racha calculada desde el día seleccionado hacia atrás.
+      - Sonidos suaves generados por código, sin archivos mp3.
+      - Botón para activar/desactivar sonidos.
+      - Guardado local con localStorage.
     */
 
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
@@ -868,16 +919,20 @@
     const dateCard = document.getElementById('dateCard');
     const prevDayBtn = document.getElementById('prevDayBtn');
     const nextDayArrowBtn = document.getElementById('nextDayArrowBtn');
+    const soundToggle = document.getElementById('soundToggle');
 
     const currentDateLabel = document.getElementById('currentDateLabel');
     const dayStatus = document.getElementById('dayStatus');
 
-    const STORAGE_KEY = 'rutinaDiariaPremiumPorFechasV3';
+    const STORAGE_KEY = 'rutinaDiariaPremiumPorFechasV4';
+    const SOUND_KEY = 'rutinaDiariaSonidosActivosV1';
 
     let selectedDate = getTodayString();
     let timerInterval = null;
     let timerSeconds = 0;
     let noteSaveTimeout = null;
+    let audioContext = null;
+    let soundsEnabled = localStorage.getItem(SOUND_KEY) !== 'false';
 
     function getTodayString() {
       return formatDateKey(new Date());
@@ -976,7 +1031,7 @@
 
       updateDateHeader();
       updateTimerDisplay();
-      updateProgress(false);
+      updateProgress(false, false);
       updateStreak();
     }
 
@@ -1025,16 +1080,22 @@
       return [...checkboxes].every((checkbox) => checkbox.checked);
     }
 
-    function updateProgress(shouldSave = true) {
+    function updateProgress(shouldSave = true, allowSound = false) {
       const totalTasks = checkboxes.length;
       const completedTasks = [...checkboxes].filter((checkbox) => checkbox.checked).length;
       const progress = Math.round((completedTasks / totalTasks) * 100);
+
+      const wasAlreadyComplete = completeMessage.classList.contains('show');
 
       progressFill.style.width = `${progress}%`;
       progressText.textContent = `${progress}%`;
 
       if (progress === 100) {
         completeMessage.classList.add('show');
+
+        if (allowSound && !wasAlreadyComplete) {
+          playCompleteSound();
+        }
       } else {
         completeMessage.classList.remove('show');
       }
@@ -1051,11 +1112,6 @@
       let streak = 0;
       let dateKey = selectedDate;
 
-      /*
-        Racha desde el día seleccionado hacia atrás.
-        Ejemplo:
-        Si estás en Día 2 y Día 1 + Día 2 están completos, muestra 2.
-      */
       while (true) {
         const dayData = allData[dateKey];
 
@@ -1075,6 +1131,7 @@
       saveCurrentDay();
       selectedDate = addDays(selectedDate, days);
       loadSelectedDay();
+      playButtonSound();
       showSavedStatus('Día cargado');
     }
 
@@ -1083,6 +1140,7 @@
       selectedDate = addDays(selectedDate, 1);
       getDayData(selectedDate);
       loadSelectedDay();
+      playNextDaySound();
       showSavedStatus('Nuevo día cargado');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -1091,6 +1149,7 @@
       saveCurrentDay();
       selectedDate = getTodayString();
       loadSelectedDay();
+      playButtonSound();
       showSavedStatus('Hoy cargado');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -1111,9 +1170,10 @@
 
       saveCurrentDay();
       updateTimerDisplay();
-      updateProgress(false);
+      updateProgress(false, false);
       updateStreak();
 
+      playResetSound();
       showSavedStatus('Día reiniciado');
     }
 
@@ -1178,10 +1238,92 @@
       }, 350);
     }
 
+    /*
+      Sonidos generados con Web Audio API.
+      No se necesitan archivos .mp3.
+      En iPhone solo suenan después de un toque del usuario, por eso están ligados a botones y checks.
+    */
+
+    function updateSoundButton() {
+      soundToggle.textContent = soundsEnabled ? '🔊' : '🔇';
+      soundToggle.title = soundsEnabled ? 'Sonidos activados' : 'Sonidos desactivados';
+    }
+
+    function getAudioContext() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+
+      return audioContext;
+    }
+
+    function playTone(frequency = 520, duration = 0.08, type = 'sine', volume = 0.07, delay = 0) {
+      if (!soundsEnabled) return;
+
+      const ctx = getAudioContext();
+      const oscillator = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      const startTime = ctx.currentTime + delay;
+      const endTime = startTime + duration;
+
+      oscillator.type = type;
+      oscillator.frequency.setValueAtTime(frequency, startTime);
+
+      gain.gain.setValueAtTime(volume, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, endTime);
+
+      oscillator.connect(gain);
+      gain.connect(ctx.destination);
+
+      oscillator.start(startTime);
+      oscillator.stop(endTime);
+    }
+
+    function playCheckSound() {
+      playTone(650, 0.055, 'sine', 0.055);
+      playTone(920, 0.06, 'sine', 0.04, 0.055);
+    }
+
+    function playUncheckSound() {
+      playTone(360, 0.06, 'sine', 0.045);
+    }
+
+    function playButtonSound() {
+      playTone(470, 0.055, 'sine', 0.045);
+    }
+
+    function playResetSound() {
+      playTone(290, 0.08, 'triangle', 0.045);
+      playTone(220, 0.08, 'triangle', 0.035, 0.08);
+    }
+
+    function playNextDaySound() {
+      playTone(420, 0.06, 'sine', 0.045);
+      playTone(560, 0.07, 'sine', 0.045, 0.07);
+    }
+
+    function playCompleteSound() {
+      playTone(520, 0.08, 'sine', 0.06);
+      playTone(680, 0.09, 'sine', 0.06, 0.09);
+      playTone(840, 0.12, 'sine', 0.06, 0.19);
+    }
+
     checkboxes.forEach((checkbox) => {
       checkbox.addEventListener('change', () => {
         updateTaskVisual(checkbox);
-        updateProgress(true);
+
+        if (checkbox.checked) {
+          playCheckSound();
+        } else {
+          playUncheckSound();
+        }
+
+        updateProgress(true, true);
         showSavedStatus();
       });
     });
@@ -1194,9 +1336,20 @@
       });
     });
 
-    startTimer.addEventListener('click', runTimer);
-    pauseTimer.addEventListener('click', () => stopTimer(true));
-    resetTimer.addEventListener('click', clearTimer);
+    startTimer.addEventListener('click', () => {
+      playButtonSound();
+      runTimer();
+    });
+
+    pauseTimer.addEventListener('click', () => {
+      playButtonSound();
+      stopTimer(true);
+    });
+
+    resetTimer.addEventListener('click', () => {
+      playResetSound();
+      clearTimer();
+    });
 
     prevDayBtn.addEventListener('click', () => changeDate(-1));
     nextDayArrowBtn.addEventListener('click', () => changeDate(1));
@@ -1204,12 +1357,27 @@
     nextDayBtn.addEventListener('click', goToNextDay);
     todayBtn.addEventListener('click', goToToday);
     dateCard.addEventListener('click', goToToday);
+
     resetBtn.addEventListener('click', resetCurrentDay);
+
+    soundToggle.addEventListener('click', () => {
+      soundsEnabled = !soundsEnabled;
+      localStorage.setItem(SOUND_KEY, soundsEnabled);
+      updateSoundButton();
+
+      if (soundsEnabled) {
+        playCompleteSound();
+        showSavedStatus('Sonidos activados');
+      } else {
+        showSavedStatus('Sonidos desactivados');
+      }
+    });
 
     window.addEventListener('beforeunload', () => {
       saveCurrentDay();
     });
 
+    updateSoundButton();
     loadSelectedDay();
   </script>
 </body>
