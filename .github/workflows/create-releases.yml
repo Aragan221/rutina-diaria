@@ -1,0 +1,34 @@
+name: Crear release v1.5
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Crear tag y release v1.5
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.5
+          name: "v1.5 - PWA + Recordatorios"
+          body: |
+            La app ahora es instalable y puede recordarte tu rutina.
+
+            ### PWA
+            - `manifest.json` + service worker para funcionar offline.
+            - Se instala en iPhone desde Safari → Compartir → "Agregar a pantalla de inicio".
+            - Abre en pantalla completa, sin barra de navegador.
+
+            ### Recordatorios al calendario
+            - Nueva sección con selectores de hora (mañana y noche).
+            - Genera archivo `.ics` con eventos diarios recurrentes + alarma.
+            - Al abrirlo en iPhone se agregan al Calendario con notificación nativa.
+          make_latest: "true"
