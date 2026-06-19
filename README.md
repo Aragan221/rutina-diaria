@@ -5,12 +5,13 @@
 **Mini app web personal para construir disciplina, enfoque y constancia, un día a la vez.**
 
 [![App en vivo](https://img.shields.io/badge/▶_Abrir_app-GitHub_Pages-c89f72?style=for-the-badge)](https://aragan221.github.io/rutina-diaria/)
-[![Versión](https://img.shields.io/badge/versión-v1.4-a77a4d?style=for-the-badge)](#-versiones)
+[![Versión](https://img.shields.io/badge/versión-v1.5-a77a4d?style=for-the-badge)](#-versiones)
 [![Estado](https://img.shields.io/badge/estado-activo-8fb996?style=for-the-badge)](#-estado-del-proyecto)
 
 ![HTML](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
 ![CSS](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=flat-square&logo=pwa&logoColor=white)
 ![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-222?style=flat-square&logo=github&logoColor=white)
 
 </div>
@@ -42,6 +43,7 @@ Cada día se guarda de forma **independiente**, para revisar días anteriores y 
 | ⏱️ | Cronómetro de enfoque | 📤 | Exportar respaldo en JSON |
 | 📝 | Bloc de notas por fecha | 📥 | Importar respaldo |
 | 📱 | Diseño responsive tipo app móvil | 🎨 | Interfaz cálida, moderna y elegante |
+| 📲 | **PWA instalable** (offline + icono) | 🗓️ | **Recordatorios al calendario (.ics)** |
 
 ---
 
@@ -81,13 +83,43 @@ A partir de la **v1.4**, el código está separado por lenguaje para facilitar e
 
 ```
 rutina-diaria/
-├── index.html   → Estructura (HTML)
-├── styles.css   → Estilos y temas (CSS)
-├── app.js       → Lógica de la app (JavaScript)
-└── README.md    → Este archivo
+├── index.html      → Estructura (HTML)
+├── styles.css      → Estilos y temas (CSS)
+├── app.js          → Lógica de la app (JavaScript)
+├── sw.js           → Service Worker (cache offline)
+├── manifest.json   → Manifest PWA (metadata, iconos)
+├── icon-192.svg    → Icono 192x192
+├── icon-512.svg    → Icono 512x512
+└── README.md       → Este archivo
 ```
 
 > Sigue siendo HTML/CSS/JS puro: **sin frameworks, sin build, sin dependencias.** Funciona tal cual en GitHub Pages.
+
+---
+
+## 📲 Instalación en iPhone (PWA)
+
+La app se puede **instalar como aplicación** en la pantalla de inicio del iPhone:
+
+1. Abrir la app en **Safari** (no Chrome).
+2. Tocar el botón **Compartir** (cuadradito con flecha ↑).
+3. Seleccionar **"Agregar a pantalla de inicio"**.
+4. Listo: abre en pantalla completa, sin barra de Safari y funciona **offline**.
+
+> También funciona en Android: Chrome → menú (⋮) → "Instalar aplicación".
+
+---
+
+## 🗓️ Recordatorios al calendario
+
+La app incluye una sección para generar **recordatorios diarios** que se agregan al calendario del iPhone:
+
+1. Elegir la hora de la **rutina de mañana** y la de **noche**.
+2. Tocar **"Descargar recordatorios (.ics)"**.
+3. Abrir el archivo descargado → se importan 2 eventos recurrentes al Calendario.
+4. El iPhone te notifica todos los días a esas horas.
+
+> Funciona **sin servidor** y con la app cerrada, porque usa el calendario nativo del teléfono.
 
 ---
 
@@ -126,7 +158,7 @@ Esto convierte al proyecto también en un ejercicio práctico de **desarrollo as
 
 ## 🛠️ Tecnologías usadas
 
-`HTML` · `CSS` · `JavaScript` · `localStorage` · `Web Audio API` · `GitHub Pages` · `Desarrollo asistido por IA`
+`HTML` · `CSS` · `JavaScript` · `localStorage` · `Web Audio API` · `Service Worker` · `PWA` · `GitHub Pages` · `Desarrollo asistido por IA`
 
 ---
 
@@ -138,7 +170,8 @@ Esto convierte al proyecto también en un ejercicio práctico de **desarrollo as
 | `v1.1` | Versión con sonidos | Sonidos suaves al marcar tareas, completar el día y navegar |
 | `v1.2` | Versión con respaldo | Exportar e importar respaldo en JSON |
 | `v1.3` | Modo oscuro premium | Tema claro/oscuro con tonos cálidos, café y dorado, guardado en el navegador |
-| `v1.4` | **Refactor con IA** | Separación en HTML/CSS/JS, limpieza de código duplicado y mantenimiento asistido por IA |
+| `v1.4` | Refactor con IA | Separación en HTML/CSS/JS, limpieza de código duplicado y mantenimiento asistido por IA |
+| `v1.5` | **PWA + Recordatorios** | App instalable (offline, icono, pantalla completa) + recordatorios al calendario con .ics |
 
 ---
 
@@ -174,7 +207,7 @@ actualizar README
 - [ ] 😊 Estado de ánimo del día
 - [ ] 🗓️ Historial visual de días completados
 - [ ] ✏️ Personalización de tareas
-- [ ] 📲 Conversión a PWA instalable con icono propio
+- [x] ~~📲 Conversión a PWA instalable con icono propio~~ *(v1.5)*
 
 ---
 
@@ -182,7 +215,7 @@ actualizar README
 
 🟢 **Proyecto activo y en mejora continua.**
 
-La versión más reciente es **`v1.4` — Refactor con IA**, publicada mediante GitHub Pages.
+La versión más reciente es **`v1.5` — PWA + Recordatorios**, publicada mediante GitHub Pages.
 
 ---
 
