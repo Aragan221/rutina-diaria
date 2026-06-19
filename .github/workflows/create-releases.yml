@@ -1,0 +1,64 @@
+name: Crear releases históricas
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  create-releases:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Crear tag y release v1.3
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.3
+          name: "v1.3 - Modo oscuro premium"
+          body: |
+            Cuarta versión de la app.
+
+            ### Incluye
+            - Modo oscuro premium con tonos cálidos, café oscuro y dorado suave.
+            - Botón para cambiar entre modo claro y oscuro.
+            - Preferencia de tema guardada en el navegador.
+            - Mantiene sonidos, respaldo, navegación por días, racha, cronómetro y bloc de notas.
+          make_latest: "false"
+
+      - name: Crear tag y release v1.4
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.4
+          name: "v1.4 - Refactor con IA"
+          body: |
+            Refactor estructural asistido por IA.
+
+            ### Incluye
+            - Separación del monolito `index.html` en 3 archivos: `index.html` + `styles.css` + `app.js`.
+            - Eliminación de ~338 líneas de código duplicado (funciones de respaldo repetidas 4 veces).
+            - Sin cambios de comportamiento. Misma app, código limpio.
+            - Se retoma el proyecto apoyándose en IA para agilizar procesos.
+          make_latest: "false"
+
+      - name: Crear tag y release v1.5
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.5
+          name: "v1.5 - PWA + Recordatorios"
+          body: |
+            La app ahora es instalable y puede recordarte tu rutina.
+
+            ### PWA
+            - `manifest.json` + service worker para funcionar offline.
+            - Se instala en iPhone desde Safari → Compartir → "Agregar a pantalla de inicio".
+            - Abre en pantalla completa, sin barra de navegador.
+
+            ### Recordatorios al calendario
+            - Nueva sección con selectores de hora (mañana y noche).
+            - Genera archivo `.ics` con eventos diarios recurrentes + alarma.
+            - Al abrirlo en iPhone se agregan al Calendario con notificación nativa.
+          make_latest: "true"
