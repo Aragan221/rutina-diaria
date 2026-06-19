@@ -787,3 +787,68 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+/* ----- Recordatorios ----- */
+
+.reminder-intro {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+  margin-bottom: 16px;
+}
+
+.reminder-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.reminder-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reminder-row label {
+  font-size: 13px;
+  font-weight: 750;
+  color: var(--accent-dark);
+}
+
+.reminder-row input[type="time"] {
+  border: 1px solid rgba(210, 183, 150, 0.65);
+  background: rgba(255, 255, 255, 0.78);
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-size: 16px;
+  font-family: inherit;
+  font-weight: 700;
+  color: var(--text);
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.reminder-row input[type="time"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 5px rgba(200, 159, 114, 0.13);
+}
+
+body[data-theme="dark"] .reminder-row input[type="time"] {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(215, 168, 111, 0.24);
+  color: var(--text);
+}
+
+.reminder-btn {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.reminder-note {
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.4;
+  text-align: center;
+}
+

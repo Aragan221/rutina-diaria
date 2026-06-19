@@ -667,6 +667,96 @@ window.addEventListener('beforeunload', () => {
   saveCurrentDay();
 });
 
+/* ----- Recordatorios al calendario (.ics) ----- */
+
+const downloadReminder = document.getElementById('downloadReminder');
+const reminderMorning = document.getElementById('reminderMorning');
+const reminderNight = document.getElementById('reminderNight');
+
+function generateICS(morningTime, nightTime) {
+  const pad = (n) => String(n).padStart(2, '0');
+
+  // Generar eventos recurrentes diarios
+  const now = new Date();
+  const dateStamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}T${pad(now.getHours())}${pad(now.getMinutes())}00`;
+
+  // Fecha de inicio: hoy
+  const startDate = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+
+  const [mHour, mMin] = morningTime.split(':');
+  const [nHour, nMin] = nightTime.split(':');
+
+  const ics = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Rutina Diaria//ES
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+BEGIN:VEVENT
+UID:rutina-manana-${Date.now()}@rutina-diaria
+DTSTAMP:${dateStamp}
+DTSTART:${startDate}T${pad(mHour)}${pad(mMin)}00
+DTEND:${startDate}T${pad(mHour)}${pad(mMin)}00
+RRULE:FREQ=DAILY
+SUMMARY:Rutina de la manana
+DESCRIPTION:Caminar, leer y pensar que haras hoy que si importa.
+BEGIN:VALARM
+TRIGGER:-PT0M
+ACTION:DISPLAY
+DESCRIPTION:Hora de tu rutina de la manana
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:rutina-noche-${Date.now()}@rutina-diaria
+DTSTAMP:${dateStamp}
+DTSTART:${startDate}T${pad(nHour)}${pad(nMin)}00
+DTEND:${startDate}T${pad(nHour)}${pad(nMin)}00
+RRULE:FREQ=DAILY
+SUMMARY:Rutina de la noche
+DESCRIPTION:Reflexionar, escribir pendientes y cerrar el dia.
+BEGIN:VALARM
+TRIGGER:-PT0M
+ACTION:DISPLAY
+DESCRIPTION:Hora de tu rutina de la noche
+END:VALARM
+END:VEVENT
+END:VCALENDAR`;
+
+  return ics;
+}
+
+function downloadReminderFile() {
+  const morningTime = reminderMorning.value || '07:00';
+  const nightTime = reminderNight.value || '21:00';
+
+  const icsContent = generateICS(morningTime, nightTime);
+  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'recordatorios-rutina-diaria.ics';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  URL.revokeObjectURL(url);
+
+  playButtonSound();
+  showSavedStatus('Recordatorios descargados');
+}
+
+downloadReminder.addEventListener('click', downloadReminderFile);
+
+/* ----- Service Worker (PWA offline) ----- */
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {
+      // Service worker no soportado o error silencioso
+    });
+  });
+}
+
 /* ----- Inicio ----- */
 
 applyTheme();

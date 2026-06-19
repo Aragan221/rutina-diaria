@@ -6,6 +6,16 @@
 
   <title>Rutina Diaria - Enfoque y Disciplina</title>
 
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#c89f72" />
+
+  <!-- iOS PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Rutina Diaria" />
+  <link rel="apple-touch-icon" href="icon-192.svg" />
+
   <link rel="stylesheet" href="styles.css" />
 </head>
 
@@ -248,6 +258,36 @@
 
       <p class="backup-note">
         El respaldo descarga tus días, notas, racha, cronómetros y preferencias de sonido en un archivo JSON.
+      </p>
+    </section>
+
+    <section class="section-card reminder-card">
+      <div class="section-title">
+        <h2>Recordatorios</h2>
+        <span class="time">Calendario</span>
+      </div>
+
+      <p class="reminder-intro">
+        Agrega recordatorios a tu calendario para no olvidar tu rutina. Se descargan como archivo .ics que tu iPhone importa directo.
+      </p>
+
+      <div class="reminder-options">
+        <div class="reminder-row">
+          <label for="reminderMorning">Hora mañana</label>
+          <input type="time" id="reminderMorning" value="07:00" />
+        </div>
+        <div class="reminder-row">
+          <label for="reminderNight">Hora noche</label>
+          <input type="time" id="reminderNight" value="21:00" />
+        </div>
+      </div>
+
+      <button class="primary-btn reminder-btn" id="downloadReminder">
+        Descargar recordatorios (.ics)
+      </button>
+
+      <p class="reminder-note">
+        Abre el archivo descargado en tu iPhone y se agrega al calendario con notificación.
       </p>
     </section>
 
