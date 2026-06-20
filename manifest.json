@@ -1,11 +1,11 @@
 {
-  "name": "Rutina Diaria - Enfoque y Disciplina",
-  "short_name": "Rutina Diaria",
-  "description": "Mini app para construir disciplina, enfoque y constancia, un dia a la vez.",
+  "name": "STREAK - No rompas la cadena",
+  "short_name": "STREAK",
+  "description": "Constancia diaria. Un eslabon a la vez. No rompas la cadena.",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f7f1e8",
-  "theme_color": "#c89f72",
+  "background_color": "#000000",
+  "theme_color": "#000000",
   "orientation": "portrait",
   "icons": [
     {

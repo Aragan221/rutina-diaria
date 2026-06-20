@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rutina-diaria-v1.5';
+const CACHE_NAME = 'streak-v1.6';
 const ASSETS = [
   './',
   './index.html',

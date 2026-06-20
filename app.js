@@ -19,6 +19,7 @@ const progressText = document.getElementById('progressText');
 const completeMessage = document.getElementById('completeMessage');
 const streakNumber = document.getElementById('streakNumber');
 const streakText = document.getElementById('streakText');
+const streakChain = document.getElementById('streakChain');
 
 const timerDisplay = document.getElementById('timerDisplay');
 const startTimer = document.getElementById('startTimer');
@@ -51,7 +52,7 @@ let timerSeconds = 0;
 let noteSaveTimeout = null;
 let audioContext = null;
 let soundsEnabled = localStorage.getItem(SOUND_KEY) !== 'false';
-let currentTheme = localStorage.getItem(THEME_KEY) || 'light';
+let currentTheme = localStorage.getItem(THEME_KEY) || 'dark';
 
 /* ----- Utilidades de fecha ----- */
 
@@ -216,6 +217,7 @@ function updateProgress(shouldSave = true, allowSound = false) {
 
   progressFill.style.width = `${progress}%`;
   progressText.textContent = `${progress}%`;
+  progressFill.classList.toggle('full', progress === 100);
 
   if (progress === 100) {
     completeMessage.classList.add('show');
@@ -251,7 +253,36 @@ function updateStreak() {
   }
 
   streakNumber.textContent = streak;
-  streakText.textContent = streak === 1 ? 'día seguido' : 'días seguidos';
+  streakText.textContent = streak === 1 ? 'día sin romper la cadena' : 'días sin romper la cadena';
+
+  renderChain();
+}
+
+/* ----- Cadena de eslabones (últimos 14 días) ----- */
+
+function renderChain() {
+  if (!streakChain) return;
+
+  const allData = getAllData();
+  const total = 14;
+  const states = [];
+
+  // De más antiguo (izquierda) a día seleccionado (derecha)
+  for (let i = total - 1; i >= 0; i--) {
+    const dateKey = addDays(selectedDate, -i);
+    states.push(Boolean(allData[dateKey] && allData[dateKey].completed === true));
+  }
+
+  // Último eslabón encendido = la chispa viva (Ember)
+  let lastOn = -1;
+  states.forEach((done, idx) => { if (done) lastOn = idx; });
+
+  streakChain.innerHTML = '';
+  states.forEach((done, idx) => {
+    const link = document.createElement('div');
+    link.className = 'link' + (done ? (idx === lastOn ? ' on live' : ' on') : '');
+    streakChain.appendChild(link);
+  });
 }
 
 /* ----- Navegación entre días ----- */
@@ -483,7 +514,7 @@ function exportBackup() {
   const allData = getAllData();
 
   const backup = {
-    app: 'Rutina Diaria - Enfoque y Disciplina',
+    app: 'STREAK - No rompas la cadena',
     version: 1,
     exportedAt: new Date().toISOString(),
     selectedDate,
@@ -499,7 +530,7 @@ function exportBackup() {
   const link = document.createElement('a');
 
   link.href = url;
-  link.download = `respaldo-rutina-diaria-${dateForName}.json`;
+  link.download = `respaldo-streak-${dateForName}.json`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -734,7 +765,7 @@ function downloadReminderFile() {
 
   const link = document.createElement('a');
   link.href = url;
-  link.download = 'recordatorios-rutina-diaria.ics';
+  link.download = 'recordatorios-streak.ics';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

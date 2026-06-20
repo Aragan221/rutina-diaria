@@ -4,16 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-  <title>Rutina Diaria - Enfoque y Disciplina</title>
+  <title>STREAK — No rompas la cadena</title>
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#c89f72" />
+  <meta name="theme-color" content="#000000" />
 
   <!-- iOS PWA -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="Rutina Diaria" />
+  <meta name="apple-mobile-web-app-title" content="STREAK" />
   <link rel="apple-touch-icon" href="icon-192.svg" />
 
   <link rel="stylesheet" href="styles.css" />
@@ -23,14 +23,16 @@
   <main class="app">
 
     <div class="top-row">
-      <div class="top-pill">
-        <span class="chain-dot"></span>
-        No rompas la cadena
+      <div class="brand">
+        <span class="brand-mark">
+          <i class="on"></i><i class="on"></i><i class="on"></i><i></i>
+        </span>
+        <span class="brand-name">STREAK</span>
       </div>
 
       <div class="top-actions">
-        <button class="theme-toggle" id="themeToggle" aria-label="Activar modo oscuro">
-          🌙
+        <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
+          ☀️
         </button>
 
         <button class="sound-toggle" id="soundToggle" aria-label="Activar o desactivar sonidos">
@@ -38,14 +40,6 @@
         </button>
       </div>
     </div>
-
-    <header>
-      <h1>Rutina Diaria - Enfoque y Disciplina</h1>
-      <p class="subtitle">
-        Una rutina sencilla para avanzar todos los días sin saturarte.
-        Cada día queda guardado como una pequeña página de tu progreso.
-      </p>
-    </header>
 
     <section class="date-navigator">
       <button class="arrow-btn" id="prevDayBtn" aria-label="Día anterior">‹</button>
@@ -59,33 +53,28 @@
     </section>
 
     <p class="mini-help">
-      Usa las flechas para revisar días anteriores o futuros. Cada fecha guarda su propia información.
+      Usa las flechas para revisar otros días. Cada fecha guarda su propia cadena.
     </p>
 
-    <section class="stats-grid">
-      <div class="progress-card">
-        <div class="progress-header">
-          <span>Progreso del día</span>
-          <span class="progress-number" id="progressText">0%</span>
-        </div>
+    <section class="streak-hero">
+      <div class="streak-kicker">Racha actual</div>
+      <div class="streak-number" id="streakNumber">0</div>
+      <div class="streak-text" id="streakText">días sin romper la cadena</div>
+      <div class="streak-chain" id="streakChain"></div>
+    </section>
 
-        <div class="progress-bar">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
+    <section class="progress-block">
+      <div class="progress-header">
+        <span>Progreso de hoy</span>
+        <span class="progress-number" id="progressText">0%</span>
       </div>
-
-      <div class="streak-card">
-        <div class="streak-label">
-          <span>Racha</span>
-          <span>🔥</span>
-        </div>
-        <div class="streak-number" id="streakNumber">0</div>
-        <div class="streak-text" id="streakText">días seguidos</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
       </div>
     </section>
 
     <section class="timer-card">
-      <div class="timer-label">Cronómetro de enfoque</div>
+      <div class="timer-label">Enfoque</div>
       <div class="timer-display" id="timerDisplay">00:00:00</div>
 
       <div class="timer-buttons">
@@ -195,7 +184,7 @@
     </section>
 
     <section class="notes-card">
-      <h2>Bloc de notas</h2>
+      <h2>Notas</h2>
       <p class="notes-intro">
         Lo que escribas aquí queda guardado únicamente para el día seleccionado.
       </p>
@@ -224,10 +213,10 @@
     </section>
 
     <section class="message" id="completeMessage">
-      <h3>Día completado ✨</h3>
+      <h3>Cadena intacta 🔥</h3>
       <p>
-        Excelente. Hoy no ganaste por hacerlo perfecto,
-        ganaste por cumplir contigo.
+        Un eslabón más. Hoy no ganaste por hacerlo perfecto,
+        ganaste por no romper la cadena.
       </p>
     </section>
 
@@ -257,7 +246,7 @@
       <input class="file-input-hidden" type="file" id="importFile" accept="application/json,.json" />
 
       <p class="backup-note">
-        El respaldo descarga tus días, notas, racha, cronómetros y preferencias de sonido en un archivo JSON.
+        El respaldo descarga tus días, notas, racha, cronómetros y preferencias en un archivo JSON.
       </p>
     </section>
 
@@ -268,7 +257,7 @@
       </div>
 
       <p class="reminder-intro">
-        Agrega recordatorios a tu calendario para no olvidar tu rutina. Se descargan como archivo .ics que tu iPhone importa directo.
+        Agrega recordatorios a tu calendario para no romper la cadena. Se descargan como archivo .ics que tu iPhone importa directo.
       </p>
 
       <div class="reminder-options">
@@ -292,7 +281,7 @@
     </section>
 
     <footer>
-      Diseñado para enfoque, disciplina y progreso diario.
+      STREAK · No rompas la cadena
     </footer>
 
   </main>
