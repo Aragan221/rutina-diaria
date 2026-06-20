@@ -1,18 +1,28 @@
 /*
-  Rutina diaria tipo mini app - versión con sonidos
+  STREAK v1.7 — App con navegacion por tabs
 
   Funciones:
+  - Navegacion por 5 tabs: Cadena, Rutina, Notas, Stats, Config.
   - Cada fecha guarda su propio registro.
-  - Tareas, notas y cronómetro son independientes por día.
-  - Racha calculada desde el día seleccionado hacia atrás.
-  - Sonidos suaves generados por código, sin archivos mp3.
-  - Botón para activar/desactivar sonidos.
+  - Tareas, notas y cronometro son independientes por dia.
+  - Racha calculada desde el dia seleccionado hacia atras.
+  - Sonidos suaves generados por codigo, sin archivos mp3.
   - Exportar e importar respaldo en JSON.
   - Guardado local con localStorage.
 */
 
+/* ----- DOM: Tabs ----- */
+
+const tabBar = document.getElementById('tabBar');
+const tabButtons = document.querySelectorAll('.tab-btn');
+const tabContents = document.querySelectorAll('.tab-content');
+
+/* ----- DOM: Tareas y notas ----- */
+
 const checkboxes = document.querySelectorAll('input[type="checkbox"]');
 const notes = document.querySelectorAll('textarea');
+
+/* ----- DOM: Progreso y racha ----- */
 
 const progressFill = document.getElementById('progressFill');
 const progressText = document.getElementById('progressText');
@@ -21,10 +31,14 @@ const streakNumber = document.getElementById('streakNumber');
 const streakText = document.getElementById('streakText');
 const streakChain = document.getElementById('streakChain');
 
+/* ----- DOM: Cronometro ----- */
+
 const timerDisplay = document.getElementById('timerDisplay');
 const startTimer = document.getElementById('startTimer');
 const pauseTimer = document.getElementById('pauseTimer');
 const resetTimer = document.getElementById('resetTimer');
+
+/* ----- DOM: Estado y navegacion ----- */
 
 const savedStatus = document.getElementById('savedStatus');
 const resetBtn = document.getElementById('resetBtn');
@@ -34,7 +48,9 @@ const dateCard = document.getElementById('dateCard');
 const prevDayBtn = document.getElementById('prevDayBtn');
 const nextDayArrowBtn = document.getElementById('nextDayArrowBtn');
 const soundToggle = document.getElementById('soundToggle');
+const soundLabel = document.getElementById('soundLabel');
 const themeToggle = document.getElementById('themeToggle');
+const themeLabel = document.getElementById('themeLabel');
 const exportBtn = document.getElementById('exportBtn');
 const importBtn = document.getElementById('importBtn');
 const importFile = document.getElementById('importFile');
@@ -42,9 +58,20 @@ const importFile = document.getElementById('importFile');
 const currentDateLabel = document.getElementById('currentDateLabel');
 const dayStatus = document.getElementById('dayStatus');
 
+/* ----- DOM: Stats ----- */
+
+const statTimer = document.getElementById('statTimer');
+const statProgress = document.getElementById('statProgress');
+const statTasks = document.getElementById('statTasks');
+const statStreak = document.getElementById('statStreak');
+
+/* ----- Constantes ----- */
+
 const STORAGE_KEY = 'rutinaDiariaPremiumPorFechasV5';
 const SOUND_KEY = 'rutinaDiariaSonidosActivosV1';
 const THEME_KEY = 'rutinaDiariaTemaPremiumV1';
+
+/* ----- Estado ----- */
 
 let selectedDate = getTodayString();
 let timerInterval = null;
@@ -53,6 +80,41 @@ let noteSaveTimeout = null;
 let audioContext = null;
 let soundsEnabled = localStorage.getItem(SOUND_KEY) !== 'false';
 let currentTheme = localStorage.getItem(THEME_KEY) || 'dark';
+
+/* ----- Navegacion por tabs ----- */
+
+function switchTab(tabId) {
+  tabContents.forEach(function (content) {
+    content.classList.remove('active');
+  });
+
+  tabButtons.forEach(function (btn) {
+    btn.classList.remove('active');
+  });
+
+  const target = document.getElementById(tabId);
+  if (target) {
+    target.classList.add('active');
+  }
+
+  const activeBtn = document.querySelector('[data-tab="' + tabId + '"]');
+  if (activeBtn) {
+    activeBtn.classList.add('active');
+  }
+
+  // Actualizar stats cuando se entra al tab
+  if (tabId === 'tabStats') {
+    updateStats();
+  }
+}
+
+tabButtons.forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    const tabId = btn.getAttribute('data-tab');
+    switchTab(tabId);
+    playButtonSound();
+  });
+});
 
 /* ----- Utilidades de fecha ----- */
 
@@ -65,7 +127,7 @@ function formatDateKey(date) {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
 
-  return `${year}-${month}-${day}`;
+  return year + '-' + month + '-' + day;
 }
 
 function parseDateKey(dateKey) {
@@ -119,12 +181,12 @@ function saveCurrentDay() {
   const dayData = allData[selectedDate] || getEmptyDayData();
 
   dayData.tasks = {};
-  checkboxes.forEach((checkbox) => {
+  checkboxes.forEach(function (checkbox) {
     dayData.tasks[checkbox.dataset.task] = checkbox.checked;
   });
 
   dayData.notes = {};
-  notes.forEach((note) => {
+  notes.forEach(function (note) {
     dayData.notes[note.id] = note.value;
   });
 
@@ -141,13 +203,13 @@ function loadSelectedDay() {
 
   const dayData = getDayData(selectedDate);
 
-  checkboxes.forEach((checkbox) => {
-    const taskId = checkbox.dataset.task;
+  checkboxes.forEach(function (checkbox) {
+    var taskId = checkbox.dataset.task;
     checkbox.checked = Boolean(dayData.tasks[taskId]);
     updateTaskVisual(checkbox);
   });
 
-  notes.forEach((note) => {
+  notes.forEach(function (note) {
     note.value = dayData.notes[note.id] || '';
   });
 
@@ -157,6 +219,7 @@ function loadSelectedDay() {
   updateTimerDisplay();
   updateProgress(false, false);
   updateStreak();
+  updateStats();
 }
 
 /* ----- Cabecera de fecha ----- */
@@ -182,9 +245,9 @@ function updateDateHeader() {
   } else if (selectedDate === yesterday) {
     dayStatus.textContent = 'Ayer';
   } else if (selectedDate === tomorrow) {
-    dayStatus.textContent = 'Mañana';
+    dayStatus.textContent = 'Manana';
   } else {
-    dayStatus.textContent = 'Día seleccionado';
+    dayStatus.textContent = 'Dia seleccionado';
   }
 }
 
@@ -205,18 +268,21 @@ function updateTaskVisual(checkbox) {
 }
 
 function areAllTasksCompleted() {
-  return [...checkboxes].every((checkbox) => checkbox.checked);
+  return [...checkboxes].every(function (checkbox) { return checkbox.checked; });
 }
 
-function updateProgress(shouldSave = true, allowSound = false) {
+function updateProgress(shouldSave, allowSound) {
+  if (shouldSave === undefined) shouldSave = true;
+  if (allowSound === undefined) allowSound = false;
+
   const totalTasks = checkboxes.length;
-  const completedTasks = [...checkboxes].filter((checkbox) => checkbox.checked).length;
+  const completedTasks = [...checkboxes].filter(function (checkbox) { return checkbox.checked; }).length;
   const progress = Math.round((completedTasks / totalTasks) * 100);
 
   const wasAlreadyComplete = completeMessage.classList.contains('show');
 
-  progressFill.style.width = `${progress}%`;
-  progressText.textContent = `${progress}%`;
+  progressFill.style.width = progress + '%';
+  progressText.textContent = progress + '%';
   progressFill.classList.toggle('full', progress === 100);
 
   if (progress === 100) {
@@ -234,6 +300,7 @@ function updateProgress(shouldSave = true, allowSound = false) {
   }
 
   updateStreak();
+  updateStats();
 }
 
 function updateStreak() {
@@ -253,12 +320,12 @@ function updateStreak() {
   }
 
   streakNumber.textContent = streak;
-  streakText.textContent = streak === 1 ? 'día sin romper la cadena' : 'días sin romper la cadena';
+  streakText.textContent = streak === 1 ? 'dia sin romper la cadena' : 'dias sin romper la cadena';
 
   renderChain();
 }
 
-/* ----- Cadena de eslabones (últimos 14 días) ----- */
+/* ----- Cadena de eslabones (ultimos 14 dias) ----- */
 
 function renderChain() {
   if (!streakChain) return;
@@ -267,32 +334,59 @@ function renderChain() {
   const total = 14;
   const states = [];
 
-  // De más antiguo (izquierda) a día seleccionado (derecha)
   for (let i = total - 1; i >= 0; i--) {
     const dateKey = addDays(selectedDate, -i);
     states.push(Boolean(allData[dateKey] && allData[dateKey].completed === true));
   }
 
-  // Último eslabón encendido = la chispa viva (Ember)
   let lastOn = -1;
-  states.forEach((done, idx) => { if (done) lastOn = idx; });
+  states.forEach(function (done, idx) { if (done) lastOn = idx; });
 
   streakChain.innerHTML = '';
-  states.forEach((done, idx) => {
+  states.forEach(function (done, idx) {
     const link = document.createElement('div');
     link.className = 'link' + (done ? (idx === lastOn ? ' on live' : ' on') : '');
     streakChain.appendChild(link);
   });
 }
 
-/* ----- Navegación entre días ----- */
+/* ----- Stats ----- */
+
+function updateStats() {
+  if (!statTimer) return;
+
+  const totalTasks = checkboxes.length;
+  const completedTasks = [...checkboxes].filter(function (cb) { return cb.checked; }).length;
+  const progress = Math.round((completedTasks / totalTasks) * 100);
+
+  statTimer.textContent = formatTime(timerSeconds);
+  statProgress.textContent = progress + '%';
+  statTasks.textContent = completedTasks + ' / ' + totalTasks;
+
+  // Calcular racha
+  const allData = getAllData();
+  let streak = 0;
+  let dateKey = selectedDate;
+  while (true) {
+    const dayData = allData[dateKey];
+    if (dayData && dayData.completed === true) {
+      streak++;
+      dateKey = addDays(dateKey, -1);
+    } else {
+      break;
+    }
+  }
+  statStreak.textContent = streak;
+}
+
+/* ----- Navegacion entre dias ----- */
 
 function changeDate(days) {
   saveCurrentDay();
   selectedDate = addDays(selectedDate, days);
   loadSelectedDay();
   playButtonSound();
-  showSavedStatus('Día cargado');
+  showSavedStatus('Dia cargado');
 }
 
 function goToNextDay() {
@@ -301,8 +395,7 @@ function goToNextDay() {
   getDayData(selectedDate);
   loadSelectedDay();
   playNextDaySound();
-  showSavedStatus('Nuevo día cargado');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  showSavedStatus('Nuevo dia cargado');
 }
 
 function goToToday() {
@@ -311,18 +404,17 @@ function goToToday() {
   loadSelectedDay();
   playButtonSound();
   showSavedStatus('Hoy cargado');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function resetCurrentDay() {
   stopTimer(false);
 
-  checkboxes.forEach((checkbox) => {
+  checkboxes.forEach(function (checkbox) {
     checkbox.checked = false;
     updateTaskVisual(checkbox);
   });
 
-  notes.forEach((note) => {
+  notes.forEach(function (note) {
     note.value = '';
   });
 
@@ -332,19 +424,20 @@ function resetCurrentDay() {
   updateTimerDisplay();
   updateProgress(false, false);
   updateStreak();
+  updateStats();
 
   playResetSound();
-  showSavedStatus('Día reiniciado');
+  showSavedStatus('Dia reiniciado');
 }
 
-/* ----- Cronómetro ----- */
+/* ----- Cronometro ----- */
 
 function formatTime(seconds) {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const secs = seconds % 60;
 
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+  return String(hours).padStart(2, '0') + ':' + String(minutes).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
 }
 
 function updateTimerDisplay() {
@@ -354,14 +447,16 @@ function updateTimerDisplay() {
 function runTimer() {
   if (timerInterval) return;
 
-  timerInterval = setInterval(() => {
+  timerInterval = setInterval(function () {
     timerSeconds++;
     updateTimerDisplay();
     saveCurrentDay();
   }, 1000);
 }
 
-function stopTimer(shouldSave = true) {
+function stopTimer(shouldSave) {
+  if (shouldSave === undefined) shouldSave = true;
+
   if (timerInterval) {
     clearInterval(timerInterval);
     timerInterval = null;
@@ -377,18 +472,20 @@ function clearTimer() {
   timerSeconds = 0;
   updateTimerDisplay();
   saveCurrentDay();
-  showSavedStatus('Cronómetro reiniciado');
+  showSavedStatus('Cronometro reiniciado');
 }
 
 /* ----- Estado guardado y notas ----- */
 
-function showSavedStatus(text = 'Guardado automáticamente') {
+function showSavedStatus(text) {
+  if (!text) text = 'Guardado automaticamente';
+
   savedStatus.textContent = text;
   savedStatus.classList.add('show');
 
   window.clearTimeout(showSavedStatus.timeout);
 
-  showSavedStatus.timeout = window.setTimeout(() => {
+  showSavedStatus.timeout = window.setTimeout(function () {
     savedStatus.classList.remove('show');
   }, 1200);
 }
@@ -396,7 +493,7 @@ function showSavedStatus(text = 'Guardado automáticamente') {
 function debounceSaveNotes() {
   window.clearTimeout(noteSaveTimeout);
 
-  noteSaveTimeout = window.setTimeout(() => {
+  noteSaveTimeout = window.setTimeout(function () {
     saveCurrentDay();
     showSavedStatus();
   }, 350);
@@ -408,11 +505,11 @@ function applyTheme() {
   document.body.setAttribute('data-theme', currentTheme);
 
   if (currentTheme === 'dark') {
-    themeToggle.textContent = '☀️';
+    themeLabel.textContent = 'Oscuro';
     themeToggle.title = 'Cambiar a modo claro';
     themeToggle.setAttribute('aria-label', 'Cambiar a modo claro');
   } else {
-    themeToggle.textContent = '🌙';
+    themeLabel.textContent = 'Claro';
     themeToggle.title = 'Cambiar a modo oscuro';
     themeToggle.setAttribute('aria-label', 'Cambiar a modo oscuro');
   }
@@ -431,14 +528,10 @@ function toggleTheme() {
   }
 }
 
-/*
-  Sonidos generados con Web Audio API.
-  No se necesitan archivos .mp3.
-  En iPhone solo suenan después de un toque del usuario, por eso están ligados a botones y checks.
-*/
+/* ----- Sonidos (Web Audio API) ----- */
 
 function updateSoundButton() {
-  soundToggle.textContent = soundsEnabled ? '🔊' : '🔇';
+  soundLabel.textContent = soundsEnabled ? 'Activado' : 'Desactivado';
   soundToggle.title = soundsEnabled ? 'Sonidos activados' : 'Sonidos desactivados';
 }
 
@@ -454,7 +547,13 @@ function getAudioContext() {
   return audioContext;
 }
 
-function playTone(frequency = 520, duration = 0.08, type = 'sine', volume = 0.07, delay = 0) {
+function playTone(frequency, duration, type, volume, delay) {
+  if (!frequency) frequency = 520;
+  if (!duration) duration = 0.08;
+  if (!type) type = 'sine';
+  if (!volume) volume = 0.07;
+  if (!delay) delay = 0;
+
   if (!soundsEnabled) return;
 
   const ctx = getAudioContext();
@@ -517,8 +616,8 @@ function exportBackup() {
     app: 'STREAK - No rompas la cadena',
     version: 1,
     exportedAt: new Date().toISOString(),
-    selectedDate,
-    soundsEnabled,
+    selectedDate: selectedDate,
+    soundsEnabled: soundsEnabled,
     data: allData
   };
 
@@ -530,7 +629,7 @@ function exportBackup() {
   const link = document.createElement('a');
 
   link.href = url;
-  link.download = `respaldo-streak-${dateForName}.json`;
+  link.download = 'respaldo-streak-' + dateForName + '.json';
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -562,14 +661,6 @@ function importBackupFile(event) {
       let importedSelectedDate = null;
       let importedSoundsEnabled = null;
 
-      /*
-        Formato nuevo:
-        {
-          app, version, exportedAt, selectedDate, soundsEnabled, data
-        }
-
-        También acepta un JSON antiguo que sea directamente el objeto de fechas.
-      */
       if (parsed && parsed.data && typeof parsed.data === 'object') {
         importedData = parsed.data;
         importedSelectedDate = parsed.selectedDate || null;
@@ -579,15 +670,15 @@ function importBackupFile(event) {
       }
 
       if (!importedData || Array.isArray(importedData)) {
-        throw new Error('Formato inválido');
+        throw new Error('Formato invalido');
       }
 
       const shouldReplace = confirm(
-        '¿Quieres importar este respaldo? Esto reemplazará los datos guardados actualmente en esta app.'
+        'Quieres importar este respaldo? Esto reemplazara los datos guardados actualmente en esta app.'
       );
 
       if (!shouldReplace) {
-        showSavedStatus('Importación cancelada');
+        showSavedStatus('Importacion cancelada');
         return;
       }
 
@@ -616,9 +707,8 @@ function importBackupFile(event) {
       loadSelectedDay();
       playCompleteSound();
       showSavedStatus('Respaldo importado');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
-      alert('No se pudo importar el respaldo. Revisa que sea un archivo JSON válido de esta app.');
+      alert('No se pudo importar el respaldo. Revisa que sea un archivo JSON valido de esta app.');
       showSavedStatus('Error al importar');
     }
   };
@@ -628,8 +718,8 @@ function importBackupFile(event) {
 
 /* ----- Eventos ----- */
 
-checkboxes.forEach((checkbox) => {
-  checkbox.addEventListener('change', () => {
+checkboxes.forEach(function (checkbox) {
+  checkbox.addEventListener('change', function () {
     updateTaskVisual(checkbox);
 
     if (checkbox.checked) {
@@ -643,31 +733,31 @@ checkboxes.forEach((checkbox) => {
   });
 });
 
-notes.forEach((note) => {
+notes.forEach(function (note) {
   note.addEventListener('input', debounceSaveNotes);
 
-  note.addEventListener('blur', () => {
+  note.addEventListener('blur', function () {
     saveCurrentDay();
   });
 });
 
-startTimer.addEventListener('click', () => {
+startTimer.addEventListener('click', function () {
   playButtonSound();
   runTimer();
 });
 
-pauseTimer.addEventListener('click', () => {
+pauseTimer.addEventListener('click', function () {
   playButtonSound();
   stopTimer(true);
 });
 
-resetTimer.addEventListener('click', () => {
+resetTimer.addEventListener('click', function () {
   playResetSound();
   clearTimer();
 });
 
-prevDayBtn.addEventListener('click', () => changeDate(-1));
-nextDayArrowBtn.addEventListener('click', () => changeDate(1));
+prevDayBtn.addEventListener('click', function () { changeDate(-1); });
+nextDayArrowBtn.addEventListener('click', function () { changeDate(1); });
 
 nextDayBtn.addEventListener('click', goToNextDay);
 todayBtn.addEventListener('click', goToToday);
@@ -677,7 +767,7 @@ resetBtn.addEventListener('click', resetCurrentDay);
 
 themeToggle.addEventListener('click', toggleTheme);
 
-soundToggle.addEventListener('click', () => {
+soundToggle.addEventListener('click', function () {
   soundsEnabled = !soundsEnabled;
   localStorage.setItem(SOUND_KEY, soundsEnabled);
   updateSoundButton();
@@ -694,7 +784,7 @@ exportBtn.addEventListener('click', exportBackup);
 importBtn.addEventListener('click', openImportPicker);
 importFile.addEventListener('change', importBackupFile);
 
-window.addEventListener('beforeunload', () => {
+window.addEventListener('beforeunload', function () {
   saveCurrentDay();
 });
 
@@ -705,52 +795,51 @@ const reminderMorning = document.getElementById('reminderMorning');
 const reminderNight = document.getElementById('reminderNight');
 
 function generateICS(morningTime, nightTime) {
-  const pad = (n) => String(n).padStart(2, '0');
+  const pad = function (n) { return String(n).padStart(2, '0'); };
 
-  // Generar eventos recurrentes diarios
   const now = new Date();
-  const dateStamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}T${pad(now.getHours())}${pad(now.getMinutes())}00`;
+  const dateStamp = now.getFullYear() + pad(now.getMonth() + 1) + pad(now.getDate()) + 'T' + pad(now.getHours()) + pad(now.getMinutes()) + '00';
+  const startDate = now.getFullYear() + pad(now.getMonth() + 1) + pad(now.getDate());
 
-  // Fecha de inicio: hoy
-  const startDate = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}`;
+  const mHour = morningTime.split(':')[0];
+  const mMin = morningTime.split(':')[1];
+  const nHour = nightTime.split(':')[0];
+  const nMin = nightTime.split(':')[1];
 
-  const [mHour, mMin] = morningTime.split(':');
-  const [nHour, nMin] = nightTime.split(':');
-
-  const ics = `BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Rutina Diaria//ES
-CALSCALE:GREGORIAN
-METHOD:PUBLISH
-BEGIN:VEVENT
-UID:rutina-manana-${Date.now()}@rutina-diaria
-DTSTAMP:${dateStamp}
-DTSTART:${startDate}T${pad(mHour)}${pad(mMin)}00
-DTEND:${startDate}T${pad(mHour)}${pad(mMin)}00
-RRULE:FREQ=DAILY
-SUMMARY:Rutina de la manana
-DESCRIPTION:Caminar, leer y pensar que haras hoy que si importa.
-BEGIN:VALARM
-TRIGGER:-PT0M
-ACTION:DISPLAY
-DESCRIPTION:Hora de tu rutina de la manana
-END:VALARM
-END:VEVENT
-BEGIN:VEVENT
-UID:rutina-noche-${Date.now()}@rutina-diaria
-DTSTAMP:${dateStamp}
-DTSTART:${startDate}T${pad(nHour)}${pad(nMin)}00
-DTEND:${startDate}T${pad(nHour)}${pad(nMin)}00
-RRULE:FREQ=DAILY
-SUMMARY:Rutina de la noche
-DESCRIPTION:Reflexionar, escribir pendientes y cerrar el dia.
-BEGIN:VALARM
-TRIGGER:-PT0M
-ACTION:DISPLAY
-DESCRIPTION:Hora de tu rutina de la noche
-END:VALARM
-END:VEVENT
-END:VCALENDAR`;
+  var ics = 'BEGIN:VCALENDAR\n';
+  ics += 'VERSION:2.0\n';
+  ics += 'PRODID:-//STREAK//ES\n';
+  ics += 'CALSCALE:GREGORIAN\n';
+  ics += 'METHOD:PUBLISH\n';
+  ics += 'BEGIN:VEVENT\n';
+  ics += 'UID:rutina-manana-' + Date.now() + '@streak\n';
+  ics += 'DTSTAMP:' + dateStamp + '\n';
+  ics += 'DTSTART:' + startDate + 'T' + pad(mHour) + pad(mMin) + '00\n';
+  ics += 'DTEND:' + startDate + 'T' + pad(mHour) + pad(mMin) + '00\n';
+  ics += 'RRULE:FREQ=DAILY\n';
+  ics += 'SUMMARY:Rutina de la manana\n';
+  ics += 'DESCRIPTION:Caminar, leer y pensar que haras hoy que si importa.\n';
+  ics += 'BEGIN:VALARM\n';
+  ics += 'TRIGGER:-PT0M\n';
+  ics += 'ACTION:DISPLAY\n';
+  ics += 'DESCRIPTION:Hora de tu rutina de la manana\n';
+  ics += 'END:VALARM\n';
+  ics += 'END:VEVENT\n';
+  ics += 'BEGIN:VEVENT\n';
+  ics += 'UID:rutina-noche-' + Date.now() + '@streak\n';
+  ics += 'DTSTAMP:' + dateStamp + '\n';
+  ics += 'DTSTART:' + startDate + 'T' + pad(nHour) + pad(nMin) + '00\n';
+  ics += 'DTEND:' + startDate + 'T' + pad(nHour) + pad(nMin) + '00\n';
+  ics += 'RRULE:FREQ=DAILY\n';
+  ics += 'SUMMARY:Rutina de la noche\n';
+  ics += 'DESCRIPTION:Reflexionar, escribir pendientes y cerrar el dia.\n';
+  ics += 'BEGIN:VALARM\n';
+  ics += 'TRIGGER:-PT0M\n';
+  ics += 'ACTION:DISPLAY\n';
+  ics += 'DESCRIPTION:Hora de tu rutina de la noche\n';
+  ics += 'END:VALARM\n';
+  ics += 'END:VEVENT\n';
+  ics += 'END:VCALENDAR';
 
   return ics;
 }
@@ -781,8 +870,8 @@ downloadReminder.addEventListener('click', downloadReminderFile);
 /* ----- Service Worker (PWA offline) ----- */
 
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').catch(function () {
       // Service worker no soportado o error silencioso
     });
   });

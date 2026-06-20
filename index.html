@@ -22,267 +22,378 @@
 <body>
   <main class="app">
 
-    <div class="top-row">
-      <div class="brand">
-        <span class="brand-mark">
-          <i class="on"></i><i class="on"></i><i class="on"></i><i></i>
-        </span>
-        <span class="brand-name">STREAK</span>
-      </div>
-
-      <div class="top-actions">
-        <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
-          ☀️
-        </button>
-
-        <button class="sound-toggle" id="soundToggle" aria-label="Activar o desactivar sonidos">
-          🔊
-        </button>
-      </div>
-    </div>
-
+    <!-- Navegador de fecha (compartido, siempre arriba) -->
     <section class="date-navigator">
-      <button class="arrow-btn" id="prevDayBtn" aria-label="Día anterior">‹</button>
+      <button class="arrow-btn" id="prevDayBtn" aria-label="Dia anterior">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
 
       <div class="date-card" id="dateCard" title="Toca para volver a hoy">
         <div class="date-label" id="dayStatus">Hoy</div>
         <div class="date-value" id="currentDateLabel">Cargando fecha...</div>
       </div>
 
-      <button class="arrow-btn" id="nextDayArrowBtn" aria-label="Día siguiente">›</button>
-    </section>
-
-    <p class="mini-help">
-      Usa las flechas para revisar otros días. Cada fecha guarda su propia cadena.
-    </p>
-
-    <section class="streak-hero">
-      <div class="streak-kicker">Racha actual</div>
-      <div class="streak-number" id="streakNumber">0</div>
-      <div class="streak-text" id="streakText">días sin romper la cadena</div>
-      <div class="streak-chain" id="streakChain"></div>
-    </section>
-
-    <section class="progress-block">
-      <div class="progress-header">
-        <span>Progreso de hoy</span>
-        <span class="progress-number" id="progressText">0%</span>
-      </div>
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
-    </section>
-
-    <section class="timer-card">
-      <div class="timer-label">Enfoque</div>
-      <div class="timer-display" id="timerDisplay">00:00:00</div>
-
-      <div class="timer-buttons">
-        <button class="primary-btn" id="startTimer">Iniciar</button>
-        <button class="soft-btn" id="pauseTimer">Pausar</button>
-        <button class="soft-btn" id="resetTimer">Reiniciar</button>
-      </div>
-    </section>
-
-    <section class="section-card">
-      <div class="section-title">
-        <h2>Mañana</h2>
-        <span class="time">30–60 min</span>
-      </div>
-
-      <div class="task-list">
-        <label class="task">
-          <input type="checkbox" data-task="morning-walk">
-          <span class="custom-checkbox">
-            <svg viewBox="0 0 24 24">
-              <path d="M5 13l4 4L19 7"></path>
-            </svg>
-          </span>
-          <span class="task-text">Caminar / moverse durante 10–15 min</span>
-        </label>
-
-        <label class="task">
-          <input type="checkbox" data-task="morning-read">
-          <span class="custom-checkbox">
-            <svg viewBox="0 0 24 24">
-              <path d="M5 13l4 4L19 7"></path>
-            </svg>
-          </span>
-          <span class="task-text">Leer Atomic Habits durante 15 min</span>
-        </label>
-
-        <label class="task">
-          <input type="checkbox" data-task="morning-focus">
-          <span class="custom-checkbox">
-            <svg viewBox="0 0 24 24">
-              <path d="M5 13l4 4L19 7"></path>
-            </svg>
-          </span>
-          <span class="task-text">Pensar: ¿Qué haré hoy que sí importa?</span>
-        </label>
-      </div>
-    </section>
-
-    <section class="section-card">
-      <div class="section-title">
-        <h2>Medio día</h2>
-        <span class="time">Opcional</span>
-      </div>
-
-      <div class="task-list">
-        <label class="task">
-          <input type="checkbox" data-task="business-task">
-          <span class="custom-checkbox">
-            <svg viewBox="0 0 24 24">
-              <path d="M5 13l4 4L19 7"></path>
-            </svg>
-          </span>
-          <span class="task-text">Hacer 1 tarea ligera de negocio</span>
-        </label>
-
-        <p class="subtask">Idea de anuncio · mejorar mensaje · analizar competencia</p>
-      </div>
-    </section>
-
-    <section class="section-card">
-      <div class="section-title">
-        <h2>Noche</h2>
-        <span class="time">20–30 min</span>
-      </div>
-
-      <div class="task-list">
-        <label class="task">
-          <input type="checkbox" data-task="night-good">
-          <span class="custom-checkbox">
-            <svg viewBox="0 0 24 24">
-              <path d="M5 13l4 4L19 7"></path>
-            </svg>
-          </span>
-          <span class="task-text">Reflexión: ¿Qué hice bien hoy?</span>
-        </label>
-
-        <label class="task">
-          <input type="checkbox" data-task="night-improve">
-          <span class="custom-checkbox">
-            <svg viewBox="0 0 24 24">
-              <path d="M5 13l4 4L19 7"></path>
-            </svg>
-          </span>
-          <span class="task-text">Reflexión: ¿Qué puedo mejorar?</span>
-        </label>
-
-        <label class="task">
-          <input type="checkbox" data-task="night-pending">
-          <span class="custom-checkbox">
-            <svg viewBox="0 0 24 24">
-              <path d="M5 13l4 4L19 7"></path>
-            </svg>
-          </span>
-          <span class="task-text">Orden mental: escribir pendientes</span>
-        </label>
-      </div>
-    </section>
-
-    <section class="notes-card">
-      <h2>Notas</h2>
-      <p class="notes-intro">
-        Lo que escribas aquí queda guardado únicamente para el día seleccionado.
-      </p>
-
-      <div class="note-group">
-        <label for="importantNote">¿Qué haré hoy que sí importa?</label>
-        <textarea id="importantNote" placeholder="Ejemplo: avanzar una tarea clave, entrenar, estudiar, mejorar un anuncio..."></textarea>
-      </div>
-
-      <div class="note-group">
-        <label for="goodNote">¿Qué hice bien hoy?</label>
-        <textarea id="goodNote" placeholder="Escribe algo que sí cumpliste, aunque sea pequeño."></textarea>
-      </div>
-
-      <div class="note-group">
-        <label for="improveNote">¿Qué puedo mejorar?</label>
-        <textarea id="improveNote" placeholder="Sin castigarte. Solo observa qué puedes ajustar mañana."></textarea>
-      </div>
-
-      <div class="note-group">
-        <label for="pendingNote">Pendientes</label>
-        <textarea id="pendingNote" placeholder="Saca de la cabeza lo que queda pendiente."></textarea>
-      </div>
-
-      <div class="saved-status" id="savedStatus">Guardado automáticamente</div>
-    </section>
-
-    <section class="message" id="completeMessage">
-      <h3>Cadena intacta 🔥</h3>
-      <p>
-        Un eslabón más. Hoy no ganaste por hacerlo perfecto,
-        ganaste por no romper la cadena.
-      </p>
-    </section>
-
-    <section class="bottom-actions">
-      <button class="next-day-btn" id="nextDayBtn">
-        Siguiente día
+      <button class="arrow-btn" id="nextDayArrowBtn" aria-label="Dia siguiente">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
       </button>
+    </section>
 
-      <button class="today-btn" id="todayBtn">
-        Volver a hoy
-      </button>
+    <!-- ==================== TAB: CADENA ==================== -->
+    <section class="tab-content active" id="tabCadena">
 
-      <button class="reset-btn" id="resetBtn">
-        Reiniciar solo este día
-      </button>
+      <section class="streak-hero">
+        <div class="streak-kicker">Racha actual</div>
+        <div class="streak-number" id="streakNumber">0</div>
+        <div class="streak-text" id="streakText">dias sin romper la cadena</div>
+        <div class="streak-chain" id="streakChain"></div>
+      </section>
 
-      <div class="backup-grid">
-        <button class="backup-btn" id="exportBtn">
-          Exportar respaldo
+      <section class="progress-block">
+        <div class="progress-header">
+          <span>Progreso de hoy</span>
+          <span class="progress-number" id="progressText">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </section>
+
+      <section class="message" id="completeMessage">
+        <h3>Cadena intacta</h3>
+        <p>
+          Un eslabon mas. Hoy no ganaste por hacerlo perfecto,
+          ganaste por no romper la cadena.
+        </p>
+      </section>
+
+    </section>
+
+    <!-- ==================== TAB: RUTINA ==================== -->
+    <section class="tab-content" id="tabRutina">
+
+      <section class="section-block">
+        <div class="section-title">
+          <h2>Manana</h2>
+          <span class="time">30-60 min</span>
+        </div>
+
+        <div class="task-list">
+          <label class="task">
+            <input type="checkbox" data-task="morning-walk">
+            <span class="custom-checkbox">
+              <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
+            </span>
+            <span class="task-text">Caminar / moverse durante 10-15 min</span>
+          </label>
+
+          <label class="task">
+            <input type="checkbox" data-task="morning-read">
+            <span class="custom-checkbox">
+              <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
+            </span>
+            <span class="task-text">Leer Atomic Habits durante 15 min</span>
+          </label>
+
+          <label class="task">
+            <input type="checkbox" data-task="morning-focus">
+            <span class="custom-checkbox">
+              <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
+            </span>
+            <span class="task-text">Pensar: Que hare hoy que si importa?</span>
+          </label>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <section class="section-block">
+        <div class="section-title">
+          <h2>Medio dia</h2>
+          <span class="time">Opcional</span>
+        </div>
+
+        <div class="task-list">
+          <label class="task">
+            <input type="checkbox" data-task="business-task">
+            <span class="custom-checkbox">
+              <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
+            </span>
+            <span class="task-text">Hacer 1 tarea ligera de negocio</span>
+          </label>
+
+          <p class="subtask">Idea de anuncio / mejorar mensaje / analizar competencia</p>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <section class="section-block">
+        <div class="section-title">
+          <h2>Noche</h2>
+          <span class="time">20-30 min</span>
+        </div>
+
+        <div class="task-list">
+          <label class="task">
+            <input type="checkbox" data-task="night-good">
+            <span class="custom-checkbox">
+              <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
+            </span>
+            <span class="task-text">Reflexion: Que hice bien hoy?</span>
+          </label>
+
+          <label class="task">
+            <input type="checkbox" data-task="night-improve">
+            <span class="custom-checkbox">
+              <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
+            </span>
+            <span class="task-text">Reflexion: Que puedo mejorar?</span>
+          </label>
+
+          <label class="task">
+            <input type="checkbox" data-task="night-pending">
+            <span class="custom-checkbox">
+              <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
+            </span>
+            <span class="task-text">Orden mental: escribir pendientes</span>
+          </label>
+        </div>
+      </section>
+
+      <!-- Cronometro -->
+      <div class="section-divider"></div>
+
+      <section class="section-block timer-section">
+        <div class="section-title">
+          <h2>Enfoque</h2>
+          <span class="time">Cronometro</span>
+        </div>
+        <div class="timer-display" id="timerDisplay">00:00:00</div>
+        <div class="timer-buttons">
+          <button class="primary-btn" id="startTimer">Iniciar</button>
+          <button class="soft-btn" id="pauseTimer">Pausar</button>
+          <button class="soft-btn" id="resetTimer">Reiniciar</button>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- ==================== TAB: NOTAS ==================== -->
+    <section class="tab-content" id="tabNotas">
+
+      <section class="section-block">
+        <div class="section-title">
+          <h2>Notas del dia</h2>
+        </div>
+        <p class="notes-intro">
+          Lo que escribas aqui queda guardado unicamente para el dia seleccionado.
+        </p>
+
+        <div class="note-group">
+          <label for="importantNote">Que hare hoy que si importa?</label>
+          <textarea id="importantNote" placeholder="Ejemplo: avanzar una tarea clave, entrenar, estudiar, mejorar un anuncio..."></textarea>
+        </div>
+
+        <div class="note-group">
+          <label for="goodNote">Que hice bien hoy?</label>
+          <textarea id="goodNote" placeholder="Escribe algo que si cumpliste, aunque sea pequeno."></textarea>
+        </div>
+
+        <div class="note-group">
+          <label for="improveNote">Que puedo mejorar?</label>
+          <textarea id="improveNote" placeholder="Sin castigarte. Solo observa que puedes ajustar manana."></textarea>
+        </div>
+
+        <div class="note-group">
+          <label for="pendingNote">Pendientes</label>
+          <textarea id="pendingNote" placeholder="Saca de la cabeza lo que queda pendiente."></textarea>
+        </div>
+
+        <div class="saved-status" id="savedStatus">Guardado automaticamente</div>
+      </section>
+
+    </section>
+
+    <!-- ==================== TAB: STATS ==================== -->
+    <section class="tab-content" id="tabStats">
+
+      <section class="section-block">
+        <div class="section-title">
+          <h2>Estadisticas del dia</h2>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <div class="stat-value" id="statTimer">00:00:00</div>
+            <div class="stat-label">Tiempo enfocado</div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+            </div>
+            <div class="stat-value" id="statProgress">0%</div>
+            <div class="stat-label">Completado</div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            </div>
+            <div class="stat-value" id="statTasks">0 / 0</div>
+            <div class="stat-label">Tareas hechas</div>
+          </div>
+
+          <div class="stat-item">
+            <div class="stat-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13.73 21a2 2 0 01-3.46 0"/><path d="M18.63 13A17.89 17.89 0 0118 8"/><path d="M6.26 6.26A5.86 5.86 0 006 8c0 7-3 9-3 9h14"/><path d="M18 8a6 6 0 00-9.33-5"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </div>
+            <div class="stat-value" id="statStreak">0</div>
+            <div class="stat-label">Racha actual</div>
+          </div>
+        </div>
+      </section>
+
+    </section>
+
+    <!-- ==================== TAB: CONFIG ==================== -->
+    <section class="tab-content" id="tabConfig">
+
+      <section class="section-block">
+        <div class="section-title">
+          <h2>Configuracion</h2>
+        </div>
+
+        <!-- Tema -->
+        <div class="config-row">
+          <div class="config-info">
+            <div class="config-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </div>
+            <span>Tema</span>
+          </div>
+          <button class="config-toggle" id="themeToggle" aria-label="Cambiar tema">
+            <span id="themeLabel">Oscuro</span>
+          </button>
+        </div>
+
+        <!-- Sonido -->
+        <div class="config-row">
+          <div class="config-info">
+            <div class="config-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 010 14.14"/><path d="M15.54 8.46a5 5 0 010 7.07"/></svg>
+            </div>
+            <span>Sonido</span>
+          </div>
+          <button class="config-toggle" id="soundToggle" aria-label="Activar o desactivar sonidos">
+            <span id="soundLabel">Activado</span>
+          </button>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <!-- Respaldo -->
+        <div class="config-section-label">Respaldo</div>
+
+        <div class="config-actions">
+          <button class="action-btn" id="exportBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Exportar respaldo</span>
+          </button>
+
+          <button class="action-btn" id="importBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <span>Importar respaldo</span>
+          </button>
+        </div>
+
+        <input class="file-input-hidden" type="file" id="importFile" accept="application/json,.json" />
+
+        <p class="config-note">
+          El respaldo descarga tus dias, notas, racha, cronometros y preferencias en un archivo JSON.
+        </p>
+
+        <div class="section-divider"></div>
+
+        <!-- Recordatorios -->
+        <div class="config-section-label">Recordatorios</div>
+
+        <p class="config-note" style="margin-bottom: 16px;">
+          Agrega recordatorios a tu calendario para no romper la cadena. Se descargan como archivo .ics.
+        </p>
+
+        <div class="reminder-options">
+          <div class="reminder-row">
+            <label for="reminderMorning">Hora manana</label>
+            <input type="time" id="reminderMorning" value="07:00" />
+          </div>
+          <div class="reminder-row">
+            <label for="reminderNight">Hora noche</label>
+            <input type="time" id="reminderNight" value="21:00" />
+          </div>
+        </div>
+
+        <button class="action-btn primary" id="downloadReminder">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>Descargar recordatorios (.ics)</span>
         </button>
 
-        <button class="import-btn" id="importBtn">
-          Importar respaldo
-        </button>
-      </div>
+        <div class="section-divider"></div>
 
-      <input class="file-input-hidden" type="file" id="importFile" accept="application/json,.json" />
+        <!-- Acciones del dia -->
+        <div class="config-section-label">Dia actual</div>
 
-      <p class="backup-note">
-        El respaldo descarga tus días, notas, racha, cronómetros y preferencias en un archivo JSON.
-      </p>
+        <div class="config-actions">
+          <button class="action-btn" id="nextDayBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 16 12 12 16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            <span>Siguiente dia</span>
+          </button>
+
+          <button class="action-btn" id="todayBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Volver a hoy</span>
+          </button>
+
+          <button class="action-btn danger" id="resetBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+            <span>Reiniciar solo este dia</span>
+          </button>
+        </div>
+
+      </section>
+
+      <footer>
+        STREAK v1.7
+      </footer>
+
     </section>
 
-    <section class="section-card reminder-card">
-      <div class="section-title">
-        <h2>Recordatorios</h2>
-        <span class="time">Calendario</span>
-      </div>
-
-      <p class="reminder-intro">
-        Agrega recordatorios a tu calendario para no romper la cadena. Se descargan como archivo .ics que tu iPhone importa directo.
-      </p>
-
-      <div class="reminder-options">
-        <div class="reminder-row">
-          <label for="reminderMorning">Hora mañana</label>
-          <input type="time" id="reminderMorning" value="07:00" />
-        </div>
-        <div class="reminder-row">
-          <label for="reminderNight">Hora noche</label>
-          <input type="time" id="reminderNight" value="21:00" />
-        </div>
-      </div>
-
-      <button class="primary-btn reminder-btn" id="downloadReminder">
-        Descargar recordatorios (.ics)
+    <!-- ==================== BARRA DE TABS (fija abajo) ==================== -->
+    <nav class="tab-bar" id="tabBar">
+      <button class="tab-btn active" data-tab="tabCadena" aria-label="Cadena">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+        <span>Cadena</span>
       </button>
-
-      <p class="reminder-note">
-        Abre el archivo descargado en tu iPhone y se agrega al calendario con notificación.
-      </p>
-    </section>
-
-    <footer>
-      STREAK · No rompas la cadena
-    </footer>
+      <button class="tab-btn" data-tab="tabRutina" aria-label="Rutina">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+        <span>Rutina</span>
+      </button>
+      <button class="tab-btn" data-tab="tabNotas" aria-label="Notas">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+        <span>Notas</span>
+      </button>
+      <button class="tab-btn" data-tab="tabStats" aria-label="Stats">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span>Stats</span>
+      </button>
+      <button class="tab-btn" data-tab="tabConfig" aria-label="Config">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        <span>Config</span>
+      </button>
+    </nav>
 
   </main>
 

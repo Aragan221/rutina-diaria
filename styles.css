@@ -1,7 +1,7 @@
 /* ============================================================
-   STREAK — Mono Noir
+   STREAK v1.7 — Mono Noir + Tab Navigation
    Identidad: negro absoluto, blanco puro, acento Ember.
-   Tema por defecto: oscuro (Noir). Tema claro = invertido.
+   Navegacion por tabs, sin tarjetas flotantes, iconos SVG.
 ============================================================ */
 
 :root {
@@ -16,9 +16,9 @@
   --ember-soft: rgba(232, 163, 61, 0.16);
   --green: #ffffff;
   --danger: #ff6b5e;
-  --radius: 20px;
-  --radius-sm: 14px;
-  --shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --tab-height: 60px;
 }
 
 body[data-theme="light"] {
@@ -33,7 +33,6 @@ body[data-theme="light"] {
   --ember-soft: rgba(201, 133, 42, 0.14);
   --green: #000000;
   --danger: #c4402f;
-  --shadow: 0 24px 60px rgba(0, 0, 0, 0.08);
 }
 
 * {
@@ -53,9 +52,8 @@ body {
   -webkit-font-smoothing: antialiased;
   background: var(--bg);
   color: var(--ink);
-  transition: background 0.35s ease, color 0.35s ease;
-  padding: 22px;
-  padding-bottom: calc(40px + env(safe-area-inset-bottom));
+  transition: background 0.3s ease, color 0.3s ease;
+  padding: 16px 16px calc(var(--tab-height) + 16px + env(safe-area-inset-bottom));
 }
 
 button,
@@ -72,154 +70,129 @@ button {
   width: 100%;
   max-width: 540px;
   margin: 0 auto;
-  animation: fadeIn 0.6s ease;
 }
 
-/* ----- Barra superior / marca ----- */
-
-.top-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 26px;
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.brand-mark {
-  display: flex;
-  gap: 4px;
-}
-
-.brand-mark i {
-  width: 11px;
-  height: 11px;
-  border-radius: 4px;
-  border: 2px solid var(--ink);
-  display: block;
-}
-
-.brand-mark i.on {
-  background: var(--ink);
-}
-
-.brand-mark i.live {
-  background: var(--ember);
-  border-color: var(--ember);
-  box-shadow: 0 0 10px var(--ember-soft);
-}
-
-.brand-name {
-  font-size: 18px;
-  font-weight: 800;
-  letter-spacing: 4px;
-  color: var(--ink);
-}
-
-.top-actions {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-
-.sound-toggle,
-.theme-toggle {
-  border: 1px solid var(--line);
-  min-width: 42px;
-  height: 42px;
-  padding: 0 12px;
-  border-radius: 999px;
-  background: var(--surface);
-  color: var(--ink);
-  cursor: pointer;
-  font-size: 15px;
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.sound-toggle:hover,
-.theme-toggle:hover {
-  transform: translateY(-1px);
-  background: var(--surface-2);
-}
-
-/* ----- Navegador de fecha ----- */
+/* ----- Navegador de fecha (siempre visible arriba) ----- */
 
 .date-navigator {
   display: grid;
-  grid-template-columns: 44px 1fr 44px;
+  grid-template-columns: 40px 1fr 40px;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .arrow-btn {
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border: 1px solid var(--line);
   border-radius: 50%;
-  background: var(--surface);
+  background: transparent;
   color: var(--ink);
-  font-size: 22px;
+  display: grid;
+  place-items: center;
   cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
+  transition: background 0.2s ease;
 }
 
 .arrow-btn:hover {
-  transform: translateY(-1px);
   background: var(--surface-2);
 }
 
 .date-card {
-  min-height: 60px;
-  padding: 12px 16px;
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  border: 1px solid var(--line);
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
   display: flex;
   flex-direction: column;
   justify-content: center;
   text-align: center;
   cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-.date-card:hover {
-  background: var(--surface-2);
+  background: transparent;
 }
 
 .date-label {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--mut);
   font-weight: 800;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
 }
 
 .date-value {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: -0.3px;
   color: var(--ink);
 }
 
-.mini-help {
-  margin: 4px 0 22px;
-  color: var(--mut);
-  font-size: 12px;
-  text-align: center;
+/* ----- Tabs contenido ----- */
+
+.tab-content {
+  display: none;
 }
 
-/* ----- HERO: racha ----- */
+.tab-content.active {
+  display: block;
+  animation: fadeTab 0.15s ease;
+}
+
+@keyframes fadeTab {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ----- Barra de tabs inferior ----- */
+
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--tab-height);
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 1000;
+}
+
+.tab-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  color: var(--mut);
+  cursor: pointer;
+  padding: 6px 10px;
+  transition: color 0.2s ease;
+  min-width: 52px;
+}
+
+.tab-btn svg {
+  transition: color 0.2s ease;
+}
+
+.tab-btn span {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.tab-btn.active {
+  color: var(--ink);
+}
+
+/* ----- HERO: racha (tab cadena) ----- */
 
 .streak-hero {
   text-align: left;
-  margin-bottom: 26px;
+  margin-bottom: 28px;
+  padding-top: 8px;
 }
 
 .streak-kicker {
@@ -282,7 +255,7 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .progress-header > span:first-child {
@@ -302,7 +275,7 @@ button {
 
 .progress-bar {
   width: 100%;
-  height: 5px;
+  height: 4px;
   background: var(--line);
   border-radius: 999px;
   overflow: hidden;
@@ -320,128 +293,81 @@ button {
   background: var(--ember);
 }
 
-/* ----- Cronómetro ----- */
+/* ----- Mensaje de dia completado ----- */
 
-.timer-card {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 24px;
-  margin-bottom: 16px;
+.message {
+  display: none;
+  margin-top: 12px;
+  padding: 20px 0;
+  border-top: 1px solid var(--ember);
   text-align: center;
 }
 
-.timer-label {
+.message.show {
+  display: block;
+}
+
+.message h3 {
+  font-size: 18px;
+  margin-bottom: 6px;
+  color: var(--ink);
+}
+
+.message p {
   color: var(--mut);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 10px;
+  font-size: 13px;
+  line-height: 1.45;
 }
 
-.timer-display {
-  font-size: 46px;
-  font-weight: 800;
-  letter-spacing: -1.5px;
-  margin-bottom: 18px;
-  color: var(--ink);
-  font-variant-numeric: tabular-nums;
+/* ----- Bloques de seccion (sin tarjetas) ----- */
+
+.section-block {
+  padding: 0;
+  margin-bottom: 8px;
 }
 
-.timer-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 10px;
-}
-
-/* ----- Botones base ----- */
-
-.timer-buttons button,
-.reset-btn,
-.next-day-btn,
-.today-btn,
-.backup-btn,
-.import-btn,
-.reminder-btn {
-  border: 1px solid var(--line);
-  padding: 14px 16px;
-  border-radius: var(--radius-sm);
-  font-weight: 800;
-  font-size: 14px;
-  cursor: pointer;
-  transition: transform 0.18s ease, background 0.2s ease, opacity 0.2s ease;
-}
-
-.timer-buttons button:hover,
-.reset-btn:hover,
-.next-day-btn:hover,
-.today-btn:hover,
-.backup-btn:hover,
-.import-btn:hover,
-.reminder-btn:hover {
-  transform: translateY(-1px);
-}
-
-.primary-btn {
-  background: var(--ink);
-  color: var(--bg);
-  border-color: var(--ink);
-}
-
-.soft-btn {
-  background: var(--surface-2);
-  color: var(--ink);
-}
-
-/* ----- Secciones de tareas ----- */
-
-.section-card {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 22px;
-  margin-bottom: 16px;
+.section-divider {
+  height: 1px;
+  background: var(--line);
+  margin: 20px 0;
 }
 
 .section-title {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .section-title h2 {
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 800;
-  letter-spacing: -0.4px;
+  letter-spacing: -0.3px;
   color: var(--ink);
 }
 
 .time {
   font-size: 11px;
   color: var(--mut);
-  background: var(--surface-2);
-  border: 1px solid var(--line);
-  padding: 6px 11px;
-  border-radius: 999px;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0.5px;
 }
+
+/* ----- Tareas ----- */
 
 .task-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 .task {
   display: flex;
   align-items: center;
-  gap: 13px;
-  padding: 14px;
+  gap: 12px;
+  padding: 12px;
   border-radius: var(--radius-sm);
-  background: var(--surface-2);
+  background: transparent;
   border: 1px solid var(--line);
   transition: all 0.2s ease;
   cursor: pointer;
@@ -456,9 +382,9 @@ button {
 }
 
 .custom-checkbox {
-  width: 24px;
-  height: 24px;
-  min-width: 24px;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
   border-radius: 50%;
   border: 2px solid var(--mut);
   background: transparent;
@@ -468,8 +394,8 @@ button {
 }
 
 .custom-checkbox svg {
-  width: 13px;
-  height: 13px;
+  width: 12px;
+  height: 12px;
   stroke: var(--bg);
   stroke-width: 3;
   fill: none;
@@ -480,14 +406,14 @@ button {
 }
 
 .task-text {
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.35;
   color: var(--ink-soft);
   transition: all 0.2s ease;
 }
 
 .task.completed {
-  background: var(--surface);
+  background: transparent;
 }
 
 .task.completed .custom-checkbox {
@@ -505,30 +431,58 @@ button {
 }
 
 .subtask {
-  margin-left: 37px;
-  font-size: 13px;
+  margin-left: 34px;
+  font-size: 12px;
   color: var(--mut);
-  margin-top: -4px;
+  margin-top: -2px;
   margin-bottom: 4px;
 }
 
-/* ----- Notas ----- */
+/* ----- Cronometro ----- */
 
-.notes-card {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 22px;
-  margin-bottom: 16px;
-}
-
-.notes-card h2 {
-  font-size: 19px;
+.timer-section .timer-display {
+  font-size: 42px;
   font-weight: 800;
-  letter-spacing: -0.4px;
-  margin-bottom: 6px;
+  letter-spacing: -1.5px;
+  margin-bottom: 16px;
   color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
 }
+
+.timer-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.timer-buttons button {
+  border: 1px solid var(--line);
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.2s ease;
+}
+
+.timer-buttons button:hover {
+  transform: translateY(-1px);
+}
+
+.primary-btn {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+.soft-btn {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+/* ----- Notas ----- */
 
 .notes-intro {
   color: var(--mut);
@@ -538,7 +492,7 @@ button {
 }
 
 .note-group {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .note-group label {
@@ -552,17 +506,17 @@ button {
 
 textarea {
   width: 100%;
-  min-height: 88px;
+  min-height: 80px;
   resize: vertical;
   border: 1px solid var(--line);
-  background: var(--surface-2);
+  background: transparent;
   border-radius: var(--radius-sm);
-  padding: 14px;
-  font-size: 16px;
+  padding: 12px;
+  font-size: 15px;
   line-height: 1.45;
   color: var(--ink);
   outline: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 
 textarea::placeholder {
@@ -571,14 +525,13 @@ textarea::placeholder {
 
 textarea:focus {
   border-color: var(--ink);
-  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.04);
 }
 
 .saved-status {
   font-size: 12px;
   color: var(--ember);
   font-weight: 800;
-  margin-top: 4px;
+  margin-top: 6px;
   opacity: 0;
   transition: opacity 0.25s ease;
   min-height: 16px;
@@ -588,85 +541,149 @@ textarea:focus {
   opacity: 1;
 }
 
-/* ----- Mensaje de día completado ----- */
+/* ----- Stats ----- */
 
-.message {
-  display: none;
-  margin-top: 18px;
-  margin-bottom: 16px;
-  background: var(--surface);
-  border: 1px solid var(--ember);
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.stat-item {
+  padding: 20px 16px;
+  border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 22px;
   text-align: center;
-  animation: popIn 0.4s ease;
 }
 
-.message.show {
-  display: block;
+.stat-icon {
+  color: var(--mut);
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
 }
 
-.message h3 {
-  font-size: 20px;
-  margin-bottom: 7px;
+.stat-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--ink);
+  margin-bottom: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--mut);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* ----- Config ----- */
+
+.config-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.config-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.config-icon {
+  color: var(--mut);
+  display: flex;
+}
+
+.config-info span {
+  font-size: 15px;
+  font-weight: 600;
   color: var(--ink);
 }
 
-.message p {
+.config-toggle {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.config-toggle:hover {
+  background: var(--surface-2);
+}
+
+.config-section-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
   color: var(--mut);
+  margin-bottom: 14px;
+}
+
+.config-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--ink);
   font-size: 14px;
-  line-height: 1.45;
-}
-
-/* ----- Acciones inferiores ----- */
-
-.bottom-actions {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 11px;
-  margin-top: 16px;
-}
-
-.next-day-btn {
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
   width: 100%;
+  text-align: left;
+}
+
+.action-btn:hover {
+  background: var(--surface-2);
+}
+
+.action-btn.primary {
   background: var(--ink);
   color: var(--bg);
   border-color: var(--ink);
 }
 
-.today-btn {
-  width: 100%;
-  background: var(--surface-2);
-  color: var(--ink);
+.action-btn.primary:hover {
+  opacity: 0.9;
 }
 
-.reset-btn {
-  width: 100%;
-  background: transparent;
+.action-btn.danger {
   color: var(--danger);
-  border-color: var(--line);
+  border-color: var(--danger);
 }
 
-.backup-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 11px;
+.action-btn.danger:hover {
+  background: rgba(255, 107, 94, 0.08);
 }
 
-.backup-btn,
-.import-btn {
-  width: 100%;
-  background: var(--surface);
-  color: var(--ink);
-}
-
-.backup-note,
-.reminder-note {
+.config-note {
   color: var(--mut);
   font-size: 12px;
   line-height: 1.4;
-  text-align: center;
-  margin-top: 2px;
+  margin-bottom: 4px;
 }
 
 .file-input-hidden {
@@ -675,22 +692,11 @@ textarea:focus {
 
 /* ----- Recordatorios ----- */
 
-.reminder-card {
-  margin-top: 16px;
-}
-
-.reminder-intro {
-  color: var(--mut);
-  font-size: 13px;
-  line-height: 1.45;
-  margin-bottom: 16px;
-}
-
 .reminder-options {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .reminder-row {
@@ -708,10 +714,10 @@ textarea:focus {
 
 .reminder-row input[type="time"] {
   border: 1px solid var(--line);
-  background: var(--surface-2);
+  background: transparent;
   border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  font-size: 16px;
+  padding: 10px 12px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--ink);
   outline: none;
@@ -722,64 +728,43 @@ textarea:focus {
   border-color: var(--ink);
 }
 
-.reminder-btn {
-  width: 100%;
-  margin-bottom: 10px;
-  background: var(--ink);
-  color: var(--bg);
-  border-color: var(--ink);
-}
-
 /* ----- Footer ----- */
 
 footer {
   text-align: center;
   color: var(--mut);
-  font-size: 12px;
-  letter-spacing: 1px;
-  margin: 28px 0 10px;
-}
-
-/* ----- Animaciones ----- */
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(14px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes popIn {
-  from { opacity: 0; transform: scale(0.96) translateY(8px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  margin-top: 28px;
+  padding-bottom: 8px;
 }
 
 /* ----- Responsive ----- */
 
 @media (max-width: 430px) {
   body {
-    padding: 18px;
-    padding-bottom: calc(34px + env(safe-area-inset-bottom));
+    padding: 14px 14px calc(var(--tab-height) + 12px + env(safe-area-inset-bottom));
   }
 
-  .timer-display {
-    font-size: 40px;
+  .timer-section .timer-display {
+    font-size: 36px;
   }
 
   .timer-buttons {
     grid-template-columns: 1fr;
   }
 
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
   .date-navigator {
-    grid-template-columns: 40px 1fr 40px;
-    gap: 9px;
+    grid-template-columns: 36px 1fr 36px;
+    gap: 8px;
   }
 
   .arrow-btn {
-    width: 40px;
-    height: 40px;
-    font-size: 20px;
-  }
-
-  .backup-grid {
-    grid-template-columns: 1fr;
+    width: 36px;
+    height: 36px;
   }
 }
