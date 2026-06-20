@@ -1,4 +1,4 @@
-const CACHE_NAME = 'streak-v1.7';
+const CACHE_NAME = 'streak-v1.8';
 const ASSETS = [
   './',
   './index.html',
@@ -29,25 +29,27 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch: cache-first, luego red
+// Fetch: network-first (siempre lo mas reciente si hay internet),
+// con cache como respaldo offline.
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
+  if (event.request.method !== 'GET') return;
 
-      return fetch(event.request).then((response) => {
-        // Solo cachear requests del mismo origen
+  event.respondWith(
+    fetch(event.request)
+      .then((response) => {
         if (response.ok && event.request.url.startsWith(self.location.origin)) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         }
         return response;
-      });
-    }).catch(() => {
-      // Si falla todo, intentar servir index.html
-      if (event.request.mode === 'navigate') {
-        return caches.match('./index.html');
-      }
-    })
+      })
+      .catch(() =>
+        caches.match(event.request).then((cached) => {
+          if (cached) return cached;
+          if (event.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+        })
+      )
   );
 });
