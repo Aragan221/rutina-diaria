@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Propuestas de Rebranding — Rutina Diaria</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif;
+      background: #000;
+      overflow: hidden;
+    }
+
+    /* ---- Carrusel ---- */
+    .deck {
+      display: flex;
+      height: 100vh;
+      height: 100dvh;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+    .deck::-webkit-scrollbar { display: none; }
+    .panel {
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100%;
+      scroll-snap-align: start;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+    }
+    .panel-inner {
+      max-width: 480px;
+      margin: 0 auto;
+      min-height: 100%;
+      padding: 70px 24px 110px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    /* ---- HUD superior (indicador de propuesta) ---- */
+    .hud {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px calc(14px + env(safe-area-inset-top));
+      padding-top: max(14px, env(safe-area-inset-top));
+      background: linear-gradient(to bottom, rgba(0,0,0,0.55), transparent);
+      pointer-events: none;
+      backdrop-filter: blur(2px);
+    }
+    .hud-label {
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+    }
+    .hud-count {
+      color: rgba(255,255,255,0.7);
+      font-size: 12px;
+      font-weight: 600;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+    }
+
+    /* ---- Dots inferiores ---- */
+    .dots {
+      position: fixed;
+      bottom: calc(20px + env(safe-area-inset-bottom));
+      left: 0; right: 0;
+      z-index: 50;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      transition: all 0.3s ease;
+    }
+    .dot.active { background: #fff; width: 22px; border-radius: 4px; }
+
+    .hint {
+      position: fixed;
+      bottom: calc(42px + env(safe-area-inset-bottom));
+      left: 0; right: 0;
+      text-align: center;
+      color: rgba(255,255,255,0.45);
+      font-size: 11px;
+      z-index: 50;
+      pointer-events: none;
+      animation: fade 3s ease forwards;
+    }
+    @keyframes fade { 0%,70%{opacity:1;} 100%{opacity:0;} }
+
+    /* Componentes compartidos */
+    .row { display: flex; align-items: center; justify-content: space-between; }
+    .check {
+      display: flex; align-items: center; gap: 13px;
+      padding: 15px; border-radius: 16px; cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .box {
+      width: 24px; height: 24px; min-width: 24px; border-radius: 50%;
+      display: grid; place-items: center; transition: all 0.25s ease;
+      border: 2px solid; 
+    }
+    .box svg { width: 13px; height: 13px; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; transform: scale(0); transition: transform .2s ease; }
+    .check.done .box svg { transform: scale(1); }
+    .ctext { font-size: 15px; line-height: 1.3; transition: all .25s ease; }
+    .check.done .ctext { text-decoration: line-through; opacity: 0.5; }
+
+    /* ============================================================
+       1. STREAK — Mono Noir
+    ============================================================ */
+    .p-streak { background: #000; }
+    .p-streak .panel-inner { gap: 22px; }
+    .p-streak .brand { color:#fff; font-size: 15px; font-weight: 800; letter-spacing: 3px; }
+    .p-streak .kicker { color:#666; font-size: 13px; font-weight: 600; letter-spacing:.5px; }
+    .p-streak .hero-num { color:#fff; font-size: 120px; font-weight: 800; letter-spacing: -5px; line-height: .9; }
+    .p-streak .hero-sub { color:#888; font-size: 16px; font-weight: 600; margin-top: 4px; }
+    .p-streak .bar { height: 4px; background:#1c1c1c; border-radius: 99px; overflow:hidden; }
+    .p-streak .bar > i { display:block; height:100%; background:#fff; border-radius:99px; }
+    .p-streak .lbl { color:#666; font-size:12px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:12px; }
+    .p-streak .check { background:#0d0d0d; border:1px solid #1a1a1a; }
+    .p-streak .ctext { color:#eee; }
+    .p-streak .box { border-color:#333; }
+    .p-streak .check.done .box { background:#fff; border-color:#fff; }
+    .p-streak .check.done .box svg { stroke:#000; }
+    .p-streak .timer { color:#fff; font-size:40px; font-weight:800; letter-spacing:-1px; font-variant-numeric:tabular-nums; }
+    .p-streak .btn { background:#fff; color:#000; border:none; padding:17px; border-radius:14px; font-size:15px; font-weight:800; letter-spacing:.3px; }
+
+    /* ============================================================
+       2. RITUAL — Editorial Cálido
+    ============================================================ */
+    .p-ritual { background: #f4efe7; }
+    .p-ritual .panel-inner { gap: 20px; }
+    .p-ritual .brand { font-family: Georgia, "Times New Roman", serif; color:#2b2622; font-size: 26px; font-weight: 700; letter-spacing: 1px; font-style: italic; }
+    .p-ritual .kicker { color:#a8957e; font-size: 12px; font-weight:700; letter-spacing: 2px; text-transform: uppercase; }
+    .p-ritual .head { font-family: Georgia, serif; color:#2b2622; font-size: 34px; font-weight: 700; line-height: 1.1; letter-spacing:-.5px; }
+    .p-ritual .card { background:#fffdf9; border:1px solid #e7ded0; border-radius: 20px; padding: 22px; box-shadow: 0 10px 30px rgba(120,90,50,.06); }
+    .p-ritual .stat-num { font-family:Georgia,serif; color:#b5663f; font-size: 50px; font-weight: 700; }
+    .p-ritual .stat-lbl { color:#9c8d79; font-size: 13px; }
+    .p-ritual .bar { height: 7px; background:#eadfce; border-radius:99px; overflow:hidden; margin-top:10px; }
+    .p-ritual .bar > i { display:block; height:100%; background:#b5663f; border-radius:99px; }
+    .p-ritual .lbl { font-family:Georgia,serif; color:#2b2622; font-size:19px; font-weight:700; margin-bottom:10px; font-style:italic; }
+    .p-ritual .check { background:#fffdf9; border:1px solid #e7ded0; }
+    .p-ritual .ctext { color:#3a342e; }
+    .p-ritual .box { border-color:#d8c3a8; }
+    .p-ritual .check.done .box { background:#8a9e7e; border-color:#8a9e7e; }
+    .p-ritual .check.done .box svg { stroke:#fff; }
+    .p-ritual .timer { font-family:Georgia,serif; color:#2b2622; font-size:42px; font-weight:700; }
+    .p-ritual .btn { background:#2b2622; color:#f4efe7; border:none; padding:17px; border-radius:14px; font-size:15px; font-weight:700; }
+
+    /* ============================================================
+       3. FORJA — Glass & Graphite
+    ============================================================ */
+    .p-forja { background: #14171c; background-image: radial-gradient(circle at 15% 10%, #2a3140 0%, transparent 45%), radial-gradient(circle at 85% 90%, #1d2530 0%, transparent 45%); }
+    .p-forja .panel-inner { gap: 18px; }
+    .p-forja .brand { color:#fff; font-size: 18px; font-weight: 800; letter-spacing: 4px; }
+    .p-forja .kicker { color:#7d8aa0; font-size: 12px; font-weight: 600; letter-spacing:1px; }
+    .p-forja .glass { background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); border-radius: 22px; padding: 22px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 8px 32px rgba(0,0,0,.3); }
+    .p-forja .stat-num { color:#fff; font-size: 52px; font-weight: 800; letter-spacing:-2px; background: linear-gradient(135deg,#fff,#9fb4d4); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    .p-forja .stat-lbl { color:#8c98ac; font-size: 13px; font-weight:600; }
+    .p-forja .ring-wrap { display:grid; place-items:center; }
+    .p-forja .lbl { color:#9aa6bc; font-size:12px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:12px; }
+    .p-forja .check { background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); backdrop-filter: blur(10px); }
+    .p-forja .ctext { color:#dde3ee; }
+    .p-forja .box { border-color:#4a5568; }
+    .p-forja .check.done .box { background: linear-gradient(135deg,#5b8cff,#7aa0ff); border-color:#7aa0ff; }
+    .p-forja .check.done .box svg { stroke:#fff; }
+    .p-forja .timer { color:#fff; font-size:40px; font-weight:800; letter-spacing:-1px; font-variant-numeric:tabular-nums; }
+    .p-forja .btn { background: linear-gradient(135deg,#5b8cff,#6f7dff); color:#fff; border:none; padding:17px; border-radius:14px; font-size:15px; font-weight:800; box-shadow: 0 8px 24px rgba(91,140,255,.35); }
+
+    /* ============================================================
+       4. NORTE — Calm Minimal
+    ============================================================ */
+    .p-norte { background: #fbfbfd; }
+    .p-norte .panel-inner { gap: 18px; }
+    .p-norte .brand { color:#1d1d1f; font-size: 17px; font-weight: 700; letter-spacing: 1px; }
+    .p-norte .kicker { color:#86868b; font-size: 13px; font-weight: 500; }
+    .p-norte .head { color:#1d1d1f; font-size: 27px; font-weight: 700; letter-spacing:-.5px; line-height:1.15; }
+    .p-norte .card { background:#fff; border:1px solid #ececf0; border-radius: 20px; padding: 20px; box-shadow: 0 4px 16px rgba(0,0,0,.03); }
+    .p-norte .stat-num { color:#2e6d6a; font-size: 44px; font-weight: 700; letter-spacing:-1px; }
+    .p-norte .stat-lbl { color:#86868b; font-size: 13px; }
+    .p-norte .bar { height: 8px; background:#eef0f2; border-radius:99px; overflow:hidden; margin-top:10px; }
+    .p-norte .bar > i { display:block; height:100%; background:#2e6d6a; border-radius:99px; }
+    .p-norte .lbl { color:#1d1d1f; font-size:16px; font-weight:700; margin-bottom:10px; }
+    .p-norte .check { background:#fff; border:1px solid #ececf0; }
+    .p-norte .ctext { color:#1d1d1f; }
+    .p-norte .box { border-color:#cfd4d9; }
+    .p-norte .check.done .box { background:#2e6d6a; border-color:#2e6d6a; }
+    .p-norte .check.done .box svg { stroke:#fff; }
+    .p-norte .timer { color:#1d1d1f; font-size:40px; font-weight:700; letter-spacing:-1px; font-variant-numeric:tabular-nums; }
+    .p-norte .btn { background:#2e6d6a; color:#fff; border:none; padding:16px; border-radius:14px; font-size:15px; font-weight:700; }
+
+    /* ============================================================
+       5. MOMENTUM — Bold Gradient
+    ============================================================ */
+    .p-momentum { background: #0a0a0a; }
+    .p-momentum .panel-inner { gap: 18px; }
+    .p-momentum .brand { font-size: 18px; font-weight: 800; letter-spacing: 2px; background: linear-gradient(90deg,#ff5e7e,#ff9a5a); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    .p-momentum .kicker { color:#888; font-size: 13px; font-weight: 600; }
+    .p-momentum .head { color:#fff; font-size: 28px; font-weight: 800; letter-spacing:-.5px; }
+    .p-momentum .card { background:#161616; border-radius: 22px; padding: 22px; }
+    .p-momentum .stat-num { font-size: 48px; font-weight: 800; letter-spacing:-2px; background: linear-gradient(135deg,#ff5e7e,#ff9a5a); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    .p-momentum .stat-lbl { color:#888; font-size: 13px; font-weight:600; }
+    .p-momentum .lbl { color:#777; font-size:12px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:12px; }
+    .p-momentum .check { background:#161616; }
+    .p-momentum .ctext { color:#eee; }
+    .p-momentum .box { border-color:#3a3a3a; }
+    .p-momentum .check.done .box { background: linear-gradient(135deg,#ff5e7e,#ff9a5a); border-color:#ff7e6e; }
+    .p-momentum .check.done .box svg { stroke:#fff; }
+    .p-momentum .timer { color:#fff; font-size:42px; font-weight:800; letter-spacing:-1px; font-variant-numeric:tabular-nums; }
+    .p-momentum .btn { background: linear-gradient(135deg,#ff5e7e,#ff9a5a); color:#fff; border:none; padding:17px; border-radius:14px; font-size:15px; font-weight:800; box-shadow:0 8px 24px rgba(255,94,126,.3); }
+
+    .btn { width: 100%; cursor: pointer; transition: transform .2s ease; }
+    .btn:active { transform: scale(0.97); }
+    .ring-svg { transform: rotate(-90deg); }
+  </style>
+</head>
+<body>
+
+  <div class="hud">
+    <span class="hud-label" id="hudLabel">STREAK · Mono Noir</span>
+    <span class="hud-count" id="hudCount">1 / 5</span>
+  </div>
+
+  <div class="deck" id="deck">
+
+    <!-- 1. STREAK -->
+    <section class="panel p-streak" data-name="STREAK · Mono Noir">
+      <div class="panel-inner">
+        <div class="row">
+          <span class="brand">STREAK</span>
+          <span class="kicker">Vie · Jun 19</span>
+        </div>
+        <div>
+          <div class="kicker">Racha actual</div>
+          <div class="hero-num">12</div>
+          <div class="hero-sub">días sin romper la cadena</div>
+        </div>
+        <div>
+          <div class="row" style="margin-bottom:8px;"><span class="kicker">Progreso de hoy</span><span class="kicker" data-pct>0%</span></div>
+          <div class="bar"><i style="width:0%" data-fill></i></div>
+        </div>
+        <div>
+          <div class="lbl">Rutina</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Caminar 15 minutos</span></div>
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Leer 15 minutos</span></div>
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Reflexión de la noche</span></div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:6px;"><div class="kicker">Enfoque</div><div class="timer">00:00:00</div></div>
+        <button class="btn">Iniciar enfoque</button>
+      </div>
+    </section>
+
+    <!-- 2. RITUAL -->
+    <section class="panel p-ritual" data-name="RITUAL · Editorial">
+      <div class="panel-inner">
+        <div class="row">
+          <span class="brand">Ritual</span>
+          <span class="kicker">Viernes 19</span>
+        </div>
+        <div class="head">Buenos días.<br>Hoy también cuenta.</div>
+        <div class="card row">
+          <div><div class="stat-num">12</div><div class="stat-lbl">días de racha</div></div>
+          <div style="text-align:right;"><div class="stat-num" data-pct-num>0</div><div class="stat-lbl">% del día</div></div>
+        </div>
+        <div class="card">
+          <div class="row"><span class="stat-lbl">Progreso</span><span class="stat-lbl" data-pct>0%</span></div>
+          <div class="bar"><i style="width:0%" data-fill></i></div>
+        </div>
+        <div>
+          <div class="lbl">Tu rutina</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Caminar 15 minutos</span></div>
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Leer 15 minutos</span></div>
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Reflexión de la noche</span></div>
+          </div>
+        </div>
+        <button class="btn">Comenzar el día</button>
+      </div>
+    </section>
+
+    <!-- 3. FORJA -->
+    <section class="panel p-forja" data-name="FORJA · Glass">
+      <div class="panel-inner">
+        <div class="row">
+          <span class="brand">FORJA</span>
+          <span class="kicker">19 Jun · Viernes</span>
+        </div>
+        <div class="glass ring-wrap">
+          <svg width="150" height="150" viewBox="0 0 150 150" class="ring-svg">
+            <circle cx="75" cy="75" r="62" stroke="rgba(255,255,255,0.08)" stroke-width="12" fill="none"/>
+            <circle cx="75" cy="75" r="62" stroke="url(#g3)" stroke-width="12" fill="none" stroke-linecap="round" stroke-dasharray="389.6" stroke-dashoffset="389.6" data-ring/>
+            <defs><linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5b8cff"/><stop offset="1" stop-color="#7aa0ff"/></linearGradient></defs>
+          </svg>
+          <div style="margin-top:-95px;text-align:center;pointer-events:none;"><div class="stat-num" data-pct-num>0</div><div class="stat-lbl">% completado</div></div>
+          <div style="height:55px;"></div>
+        </div>
+        <div class="glass row">
+          <div><div style="color:#fff;font-size:30px;font-weight:800;">12</div><div class="stat-lbl">racha</div></div>
+          <div style="text-align:right;"><div style="color:#fff;font-size:30px;font-weight:800;" class="timer-mini">00:00</div><div class="stat-lbl">enfoque</div></div>
+        </div>
+        <div>
+          <div class="lbl">Rutina</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Caminar 15 minutos</span></div>
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Leer 15 minutos</span></div>
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Reflexión de la noche</span></div>
+          </div>
+        </div>
+        <button class="btn">Iniciar enfoque</button>
+      </div>
+    </section>
+
+    <!-- 4. NORTE -->
+    <section class="panel p-norte" data-name="NORTE · Calm">
+      <div class="panel-inner">
+        <div class="row">
+          <span class="brand">Norte</span>
+          <span class="kicker">Viernes, 19 jun</span>
+        </div>
+        <div class="head">Tu día, con calma.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="card"><div class="stat-num">12</div><div class="stat-lbl">días de racha</div></div>
+          <div class="card"><div class="stat-num" data-pct-num>0</div><div class="stat-lbl">% del día</div></div>
+        </div>
+        <div class="card">
+          <div class="row"><span class="stat-lbl">Progreso de hoy</span><span class="stat-lbl" data-pct>0%</span></div>
+          <div class="bar"><i style="width:0%" data-fill></i></div>
+        </div>
+        <div>
+          <div class="lbl">Rutina</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Caminar 15 minutos</span></div>
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Leer 15 minutos</span></div>
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Reflexión de la noche</span></div>
+          </div>
+        </div>
+        <div class="card row"><span class="stat-lbl">Enfoque</span><span class="timer">00:00:00</span></div>
+        <button class="btn">Iniciar enfoque</button>
+      </div>
+    </section>
+
+    <!-- 5. MOMENTUM -->
+    <section class="panel p-momentum" data-name="MOMENTUM · Gradient">
+      <div class="panel-inner">
+        <div class="row">
+          <span class="brand">MOMENTUM</span>
+          <span class="kicker">VIE 19 JUN</span>
+        </div>
+        <div class="head">Sigue el impulso.</div>
+        <div class="card ring-wrap" style="display:grid;place-items:center;">
+          <svg width="160" height="160" viewBox="0 0 160 160" class="ring-svg">
+            <circle cx="80" cy="80" r="66" stroke="#262626" stroke-width="14" fill="none"/>
+            <circle cx="80" cy="80" r="66" stroke="url(#g5)" stroke-width="14" fill="none" stroke-linecap="round" stroke-dasharray="414.7" stroke-dashoffset="414.7" data-ring/>
+            <defs><linearGradient id="g5" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff5e7e"/><stop offset="1" stop-color="#ff9a5a"/></linearGradient></defs>
+          </svg>
+          <div style="margin-top:-105px;text-align:center;pointer-events:none;"><div class="stat-num" data-pct-num>0</div><div class="stat-lbl">% de hoy</div></div>
+          <div style="height:60px;"></div>
+        </div>
+        <div class="card row">
+          <div><div style="color:#fff;font-size:30px;font-weight:800;">12</div><div class="stat-lbl">racha 🔥</div></div>
+          <div style="text-align:right;"><div class="timer" style="font-size:30px;">00:00</div><div class="stat-lbl">enfoque</div></div>
+        </div>
+        <div>
+          <div class="lbl">Rutina</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Caminar 15 minutos</span></div>
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Leer 15 minutos</span></div>
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Reflexión de la noche</span></div>
+          </div>
+        </div>
+        <button class="btn">Iniciar enfoque</button>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hint">← Desliza para ver las 5 propuestas →</div>
+  <div class="dots" id="dots"></div>
+
+  <script>
+    const deck = document.getElementById('deck');
+    const panels = [...deck.querySelectorAll('.panel')];
+    const dotsWrap = document.getElementById('dots');
+    const hudLabel = document.getElementById('hudLabel');
+    const hudCount = document.getElementById('hudCount');
+
+    // Crear dots
+    panels.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i === 0 ? ' active' : '');
+      dotsWrap.appendChild(d);
+    });
+    const dots = [...dotsWrap.children];
+
+    // Actualizar indicador al deslizar
+    let raf;
+    deck.addEventListener('scroll', () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const idx = Math.round(deck.scrollLeft / deck.clientWidth);
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+        if (panels[idx]) {
+          hudLabel.textContent = panels[idx].dataset.name;
+          hudCount.textContent = (idx + 1) + ' / ' + panels.length;
+        }
+      });
+    });
+
+    // Interactividad de cada panel (checkboxes -> progreso)
+    panels.forEach((panel) => {
+      const tasks = [...panel.querySelectorAll('[data-task]')];
+      const fill = panel.querySelector('[data-fill]');
+      const pctEls = [...panel.querySelectorAll('[data-pct]')];
+      const pctNum = panel.querySelector('[data-pct-num]');
+      const ring = panel.querySelector('[data-ring]');
+      const ringLen = ring ? parseFloat(ring.getAttribute('stroke-dasharray')) : 0;
+
+      function update() {
+        const done = tasks.filter(t => t.classList.contains('done')).length;
+        const pct = Math.round((done / tasks.length) * 100);
+        if (fill) fill.style.width = pct + '%';
+        pctEls.forEach(e => e.textContent = pct + '%');
+        if (pctNum) pctNum.textContent = pct;
+        if (ring) ring.setAttribute('stroke-dashoffset', ringLen - (ringLen * pct / 100));
+      }
+
+      tasks.forEach(t => t.addEventListener('click', () => {
+        t.classList.toggle('done');
+        update();
+      }));
+    });
+  </script>
+</body>
+</html>
