@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Finalistas — STREAK · FORJA · NORTE</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif; background:#000; overflow:hidden; }
+
+    .deck { display:flex; height:100vh; height:100dvh; overflow-x:auto; overflow-y:hidden; scroll-snap-type:x mandatory; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; }
+    .deck::-webkit-scrollbar { display:none; }
+    .panel { flex:0 0 100%; width:100%; height:100%; scroll-snap-align:start; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+    .panel-inner { max-width:480px; margin:0 auto; min-height:100%; padding:64px 22px 120px; display:flex; flex-direction:column; gap:16px; }
+
+    .hud { position:fixed; top:0; left:0; right:0; z-index:50; display:flex; align-items:center; justify-content:space-between; padding:max(14px,env(safe-area-inset-top)) 18px 14px; background:linear-gradient(to bottom, rgba(0,0,0,.5), transparent); pointer-events:none; }
+    .hud-label { color:#fff; font-size:12px; font-weight:800; letter-spacing:1px; text-shadow:0 1px 8px rgba(0,0,0,.7); }
+    .hud-count { color:rgba(255,255,255,.7); font-size:12px; font-weight:600; text-shadow:0 1px 8px rgba(0,0,0,.7); }
+    .dots { position:fixed; bottom:calc(20px + env(safe-area-inset-bottom)); left:0; right:0; z-index:50; display:flex; justify-content:center; gap:8px; pointer-events:none; }
+    .dot { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.35); transition:all .3s ease; }
+    .dot.active { background:#fff; width:22px; border-radius:4px; }
+
+    .row { display:flex; align-items:center; justify-content:space-between; }
+    .nav { display:flex; align-items:center; gap:10px; }
+    .navbtn { width:34px; height:34px; border-radius:50%; border:none; font-size:18px; cursor:pointer; display:grid; place-items:center; transition:transform .2s ease; }
+    .navbtn:active { transform:scale(.9); }
+    .check { display:flex; align-items:center; gap:13px; padding:15px; border-radius:16px; cursor:pointer; transition:all .25s ease; }
+    .box { width:24px; height:24px; min-width:24px; border-radius:50%; display:grid; place-items:center; border:2px solid; transition:all .25s ease; }
+    .box svg { width:13px; height:13px; fill:none; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; transform:scale(0); transition:transform .2s ease; }
+    .check.done .box svg { transform:scale(1); }
+    .ctext { font-size:15px; line-height:1.3; transition:all .25s ease; }
+    .check.done .ctext { text-decoration:line-through; opacity:.45; }
+    .tbtns { display:grid; grid-template-columns:1fr 1fr 1fr; gap:9px; }
+    .tbtn { border:none; padding:13px; border-radius:13px; font-size:14px; font-weight:700; cursor:pointer; transition:transform .15s ease; }
+    .tbtn:active { transform:scale(.95); }
+    .btn { width:100%; cursor:pointer; transition:transform .2s ease; border:none; }
+    .btn:active { transform:scale(.97); }
+    .ring-svg { transform:rotate(-90deg); }
+
+    /* ===== STREAK — Mono Noir ===== */
+    .p-streak { background:#000; }
+    .p-streak .panel-inner { gap:20px; }
+    .p-streak .brand { color:#fff; font-size:15px; font-weight:800; letter-spacing:4px; }
+    .p-streak .kicker { color:#777; font-size:12px; font-weight:600; letter-spacing:.5px; }
+    .p-streak .navbtn { background:#141414; color:#fff; }
+    .p-streak .datev { color:#fff; font-size:13px; font-weight:700; min-width:88px; text-align:center; }
+    .p-streak .hero-num { color:#fff; font-size:104px; font-weight:800; letter-spacing:-5px; line-height:.85; }
+    .p-streak .hero-sub { color:#888; font-size:15px; font-weight:600; margin-top:6px; }
+    /* cadena de eslabones */
+    .chain { display:flex; gap:6px; flex-wrap:wrap; margin-top:14px; }
+    .link { width:18px; height:18px; border-radius:6px; border:2px solid #2a2a2a; transition:all .3s ease; }
+    .link.on { background:#fff; border-color:#fff; box-shadow:0 0 12px rgba(255,255,255,.4); }
+    .p-streak .bar { height:4px; background:#1a1a1a; border-radius:99px; overflow:hidden; }
+    .p-streak .bar>i { display:block; height:100%; background:#fff; }
+    .p-streak .lbl { color:#666; font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; margin-bottom:12px; }
+    .p-streak .check { background:#0d0d0d; border:1px solid #1a1a1a; }
+    .p-streak .ctext { color:#eee; }
+    .p-streak .box { border-color:#333; }
+    .p-streak .check.done .box { background:#fff; border-color:#fff; }
+    .p-streak .check.done .box svg { stroke:#000; }
+    .p-streak .timer { color:#fff; font-size:42px; font-weight:800; letter-spacing:-1px; font-variant-numeric:tabular-nums; }
+    .p-streak .tbtn { background:#161616; color:#fff; }
+    .p-streak .tbtn.main { background:#fff; color:#000; }
+
+    /* ===== FORJA — Glass & Graphite ===== */
+    .p-forja { background:#13161b; background-image:radial-gradient(circle at 12% 8%, #2b3444 0%, transparent 42%), radial-gradient(circle at 88% 95%, #1b2330 0%, transparent 45%); }
+    .p-forja .panel-inner { gap:15px; }
+    .p-forja .brand { color:#fff; font-size:17px; font-weight:800; letter-spacing:5px; }
+    .p-forja .kicker { color:#7d8aa0; font-size:12px; font-weight:600; }
+    .p-forja .navbtn { background:rgba(255,255,255,.07); color:#cdd6e6; border:1px solid rgba(255,255,255,.1); }
+    .p-forja .datev { color:#cdd6e6; font-size:13px; font-weight:700; min-width:88px; text-align:center; }
+    .p-forja .glass { background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.1); border-radius:22px; padding:22px; backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); box-shadow:0 8px 32px rgba(0,0,0,.35); }
+    .p-forja .core { position:relative; display:grid; place-items:center; }
+    .p-forja .corenum { color:#fff; font-size:46px; font-weight:800; letter-spacing:-2px; background:linear-gradient(135deg,#fff,#9fb4d4); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    .p-forja .stat-lbl { color:#8c98ac; font-size:12px; font-weight:600; }
+    .p-forja .big { color:#fff; font-size:28px; font-weight:800; }
+    .p-forja .lbl { color:#9aa6bc; font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase; margin-bottom:12px; }
+    .p-forja .check { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); }
+    .p-forja .ctext { color:#dde3ee; }
+    .p-forja .box { border-color:#4a5568; }
+    .p-forja .check.done .box { background:linear-gradient(135deg,#5b8cff,#7aa0ff); border-color:#7aa0ff; }
+    .p-forja .check.done .box svg { stroke:#fff; }
+    .p-forja .timer { color:#fff; font-size:36px; font-weight:800; letter-spacing:-1px; font-variant-numeric:tabular-nums; }
+    .p-forja .tbtn { background:rgba(255,255,255,.08); color:#cdd6e6; }
+    .p-forja .tbtn.main { background:linear-gradient(135deg,#5b8cff,#6f7dff); color:#fff; box-shadow:0 6px 18px rgba(91,140,255,.4); }
+
+    /* ===== NORTE — Calm Minimal ===== */
+    .p-norte { background:#fbfbfd; }
+    .p-norte .panel-inner { gap:16px; }
+    .p-norte .brand { color:#1d1d1f; font-size:17px; font-weight:700; letter-spacing:1px; }
+    .p-norte .kicker { color:#86868b; font-size:13px; font-weight:500; }
+    .p-norte .navbtn { background:#f0f1f3; color:#1d1d1f; }
+    .p-norte .datev { color:#1d1d1f; font-size:13px; font-weight:700; min-width:92px; text-align:center; }
+    .p-norte .head { color:#1d1d1f; font-size:28px; font-weight:700; letter-spacing:-.6px; line-height:1.12; }
+    .p-norte .card { background:#fff; border:1px solid #ececf0; border-radius:20px; padding:20px; box-shadow:0 4px 16px rgba(0,0,0,.03); }
+    .p-norte .stat-num { color:#3a7d6e; font-size:42px; font-weight:700; letter-spacing:-1px; }
+    .p-norte .stat-lbl { color:#86868b; font-size:13px; }
+    .p-norte .bar { height:8px; background:#eef0f2; border-radius:99px; overflow:hidden; margin-top:10px; }
+    .p-norte .bar>i { display:block; height:100%; background:#3a7d6e; border-radius:99px; }
+    .p-norte .lbl { color:#1d1d1f; font-size:16px; font-weight:700; margin-bottom:10px; }
+    .p-norte .check { background:#fff; border:1px solid #ececf0; }
+    .p-norte .ctext { color:#1d1d1f; }
+    .p-norte .box { border-color:#cfd4d9; }
+    .p-norte .check.done .box { background:#3a7d6e; border-color:#3a7d6e; }
+    .p-norte .check.done .box svg { stroke:#fff; }
+    .p-norte .timer { color:#1d1d1f; font-size:38px; font-weight:700; letter-spacing:-1px; font-variant-numeric:tabular-nums; }
+    .p-norte .tbtn { background:#f0f1f3; color:#3a7d6e; }
+    .p-norte .tbtn.main { background:#3a7d6e; color:#fff; }
+  </style>
+</head>
+<body>
+
+  <div class="hud">
+    <span class="hud-label" id="hudLabel">STREAK · Mono Noir</span>
+    <span class="hud-count" id="hudCount">1 / 3</span>
+  </div>
+
+  <div class="deck" id="deck">
+
+    <!-- STREAK -->
+    <section class="panel p-streak" data-name="STREAK · Mono Noir">
+      <div class="panel-inner">
+        <div class="row">
+          <span class="brand">STREAK</span>
+          <div class="nav"><button class="navbtn" data-prev>‹</button><span class="datev" data-date>Hoy</span><button class="navbtn" data-next>›</button></div>
+        </div>
+        <div>
+          <div class="kicker">RACHA ACTUAL</div>
+          <div class="hero-num" data-streak>12</div>
+          <div class="hero-sub">días sin romper la cadena</div>
+          <div class="chain" data-chain></div>
+        </div>
+        <div>
+          <div class="row" style="margin-bottom:8px;"><span class="kicker">PROGRESO DE HOY</span><span class="kicker" data-pct>0%</span></div>
+          <div class="bar"><i style="width:0%" data-fill></i></div>
+        </div>
+        <div>
+          <div class="lbl">Rutina</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Caminar 15 minutos</span></div>
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Leer 15 minutos</span></div>
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Reflexión de la noche</span></div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:4px;"><div class="kicker">ENFOQUE</div><div class="timer" data-timer>00:00:00</div></div>
+        <div class="tbtns"><button class="tbtn main" data-start>Iniciar</button><button class="tbtn" data-pause>Pausar</button><button class="tbtn" data-reset>Reiniciar</button></div>
+      </div>
+    </section>
+
+    <!-- FORJA -->
+    <section class="panel p-forja" data-name="FORJA · Glass">
+      <div class="panel-inner">
+        <div class="row">
+          <span class="brand">FORJA</span>
+          <div class="nav"><button class="navbtn" data-prev>‹</button><span class="datev" data-date>Hoy</span><button class="navbtn" data-next>›</button></div>
+        </div>
+        <div class="glass core">
+          <svg width="180" height="180" viewBox="0 0 180 180" class="ring-svg">
+            <circle cx="90" cy="90" r="74" stroke="rgba(255,255,255,.08)" stroke-width="13" fill="none"/>
+            <circle cx="90" cy="90" r="74" stroke="url(#fg)" stroke-width="13" fill="none" stroke-linecap="round" stroke-dasharray="464.96" stroke-dashoffset="464.96" data-ring style="filter:drop-shadow(0 0 6px rgba(91,140,255,.6));"/>
+            <defs><linearGradient id="fg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5b8cff"/><stop offset="1" stop-color="#9fb4ff"/></linearGradient></defs>
+          </svg>
+          <div style="position:absolute;text-align:center;"><div class="corenum" data-pct-num>0</div><div class="stat-lbl">% del día</div></div>
+        </div>
+        <div class="glass row">
+          <div><div class="big" data-streak>12</div><div class="stat-lbl">racha</div></div>
+          <div style="width:1px;height:34px;background:rgba(255,255,255,.12);"></div>
+          <div style="text-align:right;"><div class="big timer" data-timer style="font-size:26px;">00:00</div><div class="stat-lbl">enfoque</div></div>
+        </div>
+        <div>
+          <div class="lbl">Rutina</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Caminar 15 minutos</span></div>
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Leer 15 minutos</span></div>
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Reflexión de la noche</span></div>
+          </div>
+        </div>
+        <div class="tbtns"><button class="tbtn main" data-start>Iniciar</button><button class="tbtn" data-pause>Pausar</button><button class="tbtn" data-reset>Reiniciar</button></div>
+      </div>
+    </section>
+
+    <!-- NORTE -->
+    <section class="panel p-norte" data-name="NORTE · Calm">
+      <div class="panel-inner">
+        <div class="row">
+          <span class="brand">Norte</span>
+          <div class="nav"><button class="navbtn" data-prev>‹</button><span class="datev" data-date>Hoy</span><button class="navbtn" data-next>›</button></div>
+        </div>
+        <div class="head">Buenos días.<br>Hoy también cuenta.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div class="card"><div class="stat-num" data-streak>12</div><div class="stat-lbl">días de racha</div></div>
+          <div class="card"><div class="stat-num" data-pct-num>0</div><div class="stat-lbl">% del día</div></div>
+        </div>
+        <div class="card">
+          <div class="row"><span class="stat-lbl">Progreso de hoy</span><span class="stat-lbl" data-pct>0%</span></div>
+          <div class="bar"><i style="width:0%" data-fill></i></div>
+        </div>
+        <div>
+          <div class="lbl">Tu rutina</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Caminar 15 minutos</span></div>
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Leer 15 minutos</span></div>
+            <div class="check" data-task><span class="box"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span><span class="ctext">Reflexión de la noche</span></div>
+          </div>
+        </div>
+        <div class="card row"><span class="stat-lbl">Enfoque</span><span class="timer" data-timer>00:00:00</span></div>
+        <div class="tbtns"><button class="tbtn main" data-start>Iniciar</button><button class="tbtn" data-pause>Pausar</button><button class="tbtn" data-reset>Reiniciar</button></div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="dots" id="dots"></div>
+
+  <script>
+    const deck = document.getElementById('deck');
+    const panels = [...deck.querySelectorAll('.panel')];
+    const dotsWrap = document.getElementById('dots');
+    const hudLabel = document.getElementById('hudLabel');
+    const hudCount = document.getElementById('hudCount');
+
+    panels.forEach((_, i) => { const d = document.createElement('div'); d.className = 'dot' + (i===0?' active':''); dotsWrap.appendChild(d); });
+    const dots = [...dotsWrap.children];
+
+    let raf;
+    deck.addEventListener('scroll', () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const idx = Math.round(deck.scrollLeft / deck.clientWidth);
+        dots.forEach((d,i) => d.classList.toggle('active', i===idx));
+        if (panels[idx]) { hudLabel.textContent = panels[idx].dataset.name; hudCount.textContent = (idx+1)+' / '+panels.length; }
+      });
+    });
+
+    const days = ['Hoy','Ayer','Hace 2 días','Hace 3 días','Mañana','En 2 días'];
+    function fmt(offset){ if(offset===0)return'Hoy'; if(offset===-1)return'Ayer'; if(offset===1)return'Mañana'; if(offset<0)return'Hace '+(-offset)+' días'; return'En '+offset+' días'; }
+
+    panels.forEach((panel) => {
+      const tasks = [...panel.querySelectorAll('[data-task]')];
+      const fill = panel.querySelector('[data-fill]');
+      const pctEls = [...panel.querySelectorAll('[data-pct]')];
+      const pctNum = panel.querySelector('[data-pct-num]');
+      const ring = panel.querySelector('[data-ring]');
+      const ringLen = ring ? parseFloat(ring.getAttribute('stroke-dasharray')) : 0;
+      const chain = panel.querySelector('[data-chain]');
+      const streakEl = panel.querySelector('[data-streak]');
+
+      // cadena de eslabones (STREAK)
+      if (chain) {
+        const total = 14, on = 12;
+        for (let i=0;i<total;i++){ const l=document.createElement('div'); l.className='link'+(i<on?' on':''); chain.appendChild(l); }
+      }
+
+      function update(){
+        const done = tasks.filter(t=>t.classList.contains('done')).length;
+        const pct = Math.round((done/tasks.length)*100);
+        if(fill) fill.style.width = pct+'%';
+        pctEls.forEach(e=>e.textContent = pct+'%');
+        if(pctNum) pctNum.textContent = pct;
+        if(ring) ring.setAttribute('stroke-dashoffset', ringLen - (ringLen*pct/100));
+      }
+      tasks.forEach(t=>t.addEventListener('click',()=>{ t.classList.toggle('done'); update(); }));
+
+      // Cronómetro
+      const timerEl = panel.querySelector('[data-timer]');
+      let secs=0, iv=null;
+      const compact = timerEl && timerEl.textContent.length<=5;
+      function render(){
+        const h=Math.floor(secs/3600), m=Math.floor((secs%3600)/60), s=secs%60;
+        const p=n=>String(n).padStart(2,'0');
+        timerEl.textContent = compact ? `${p(m)}:${p(s)}` : `${p(h)}:${p(m)}:${p(s)}`;
+      }
+      panel.querySelector('[data-start]').addEventListener('click',()=>{ if(iv)return; iv=setInterval(()=>{secs++;render();},1000); });
+      panel.querySelector('[data-pause]').addEventListener('click',()=>{ clearInterval(iv); iv=null; });
+      panel.querySelector('[data-reset]').addEventListener('click',()=>{ clearInterval(iv); iv=null; secs=0; render(); });
+
+      // Navegación de fecha
+      const dateEl = panel.querySelector('[data-date]');
+      let offset=0;
+      panel.querySelector('[data-prev]').addEventListener('click',()=>{ offset--; dateEl.textContent=fmt(offset); });
+      panel.querySelector('[data-next]').addEventListener('click',()=>{ offset++; dateEl.textContent=fmt(offset); });
+    });
+  </script>
+</body>
+</html>
