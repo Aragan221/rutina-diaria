@@ -53,7 +53,7 @@ body {
   background: var(--bg);
   color: var(--ink);
   transition: background 0.3s ease, color 0.3s ease;
-  padding: 16px 16px calc(var(--tab-height) + 16px + env(safe-area-inset-bottom));
+  padding: calc(16px + env(safe-area-inset-top)) 16px calc(var(--tab-height) + 16px + env(safe-area-inset-bottom));
 }
 
 button,
@@ -192,7 +192,7 @@ button {
 .streak-hero {
   text-align: center;
   margin-bottom: 28px;
-  padding-top: 60px;
+  padding-top: 24px;
 }
 
 .streak-kicker {
