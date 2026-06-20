@@ -7,7 +7,7 @@
 App web personal para construir disciplina y constancia. Un eslabon a la vez.
 
 [![App en vivo](https://img.shields.io/badge/▶_Abrir_STREAK-000000?style=for-the-badge)](https://aragan221.github.io/rutina-diaria/)
-[![Version](https://img.shields.io/badge/versión-v1.8-111111?style=for-the-badge)](#-versiones)
+[![Version](https://img.shields.io/badge/versión-v1.10-111111?style=for-the-badge)](#-versiones)
 [![Estado](https://img.shields.io/badge/estado-activo-e8a33d?style=for-the-badge)](#-estado-del-proyecto)
 
 ![HTML](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
@@ -146,6 +146,7 @@ Los datos se guardan en el navegador (`localStorage`). Puedes **exportar** un re
 | `v1.6` | Rebranding a STREAK | Nueva identidad Mono Noir, racha como protagonista, cadena de eslabones, acento Ember |
 | `v1.7` | Tabs + SVG | Navegacion por tabs, sin tarjetas flotantes, iconos SVG de linea, estadisticas, configuracion separada |
 | `v1.8` | **Rutina por etapas** | Racha centrada, fecha solo en Rutina, botones Manana/Tarde/Noche, cache network-first (siempre actualizado) |
+| `v1.10` | **Polish UI** | Aprendizajes de diseño aplicados: feedback tactil, jerarquia en Stats, micro-interacciones, celebracion al completar |
 
 ---
 
@@ -153,7 +154,7 @@ Los datos se guardan en el navegador (`localStorage`). Puedes **exportar** un re
 
 Proyecto activo y en mejora continua.
 
-La version mas reciente es **`v1.8`**, publicada mediante GitHub Pages.
+La version mas reciente es **`v1.10`**, publicada mediante GitHub Pages.
 
 <div align="center">
 

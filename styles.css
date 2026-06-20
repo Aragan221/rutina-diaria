@@ -19,6 +19,13 @@
   --radius: 14px;
   --radius-sm: 10px;
   --tab-height: 60px;
+  /* Escala de espaciado (multiplos de 4/8) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 48px;
 }
 
 body[data-theme="light"] {
@@ -816,4 +823,150 @@ footer {
     width: 36px;
     height: 36px;
   }
+}
+
+
+/* ============================================================
+   v1.9 — Polish: feedback tactil, jerarquia, micro-interacciones
+============================================================ */
+
+/* ----- 1. Estados tactiles (feedback al presionar, Fitts/Doherty) ----- */
+
+.arrow-btn:active,
+.stage-btn:active,
+.tab-btn:active,
+.config-toggle:active,
+.action-btn:active,
+.timer-buttons button:active {
+  transform: scale(0.96);
+}
+
+.task:active {
+  transform: scale(0.985);
+  border-color: #2e2e2e;
+}
+
+.arrow-btn,
+.config-toggle,
+.action-btn,
+.stage-btn,
+.tab-btn,
+.timer-buttons button,
+.task {
+  transition: transform 0.12s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+}
+
+/* ----- 2. Tab Cadena: centrado vertical (sin espacio muerto) ----- */
+
+#tabCadena.active {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100dvh - var(--tab-height) - 110px);
+}
+
+#tabCadena .streak-hero {
+  padding-top: 0;
+}
+
+/* ----- 3. Micro-interaccion: pop del check al marcar tarea ----- */
+
+@keyframes checkPop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.28); }
+  100% { transform: scale(1); }
+}
+
+.custom-checkbox.pop {
+  animation: checkPop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ----- 4. Celebracion al completar el dia ----- */
+
+@keyframes linkPop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+.streak-chain .link.celebrate {
+  animation: linkPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes streakPulse {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.streak-number.pulse {
+  animation: streakPulse 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-block;
+}
+
+/* ----- 5. Stats con jerarquia (hero + secundarias) ----- */
+
+.stats-hero {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--space-5) var(--space-4);
+  text-align: center;
+  margin-bottom: var(--space-3);
+  background:
+    radial-gradient(circle at 50% 0%, var(--ember-soft) 0%, transparent 70%);
+}
+
+.stats-hero .stat-icon {
+  color: var(--ember);
+  justify-content: center;
+  margin-bottom: var(--space-2);
+}
+
+.stats-hero-value {
+  font-size: 64px;
+  font-weight: 800;
+  letter-spacing: -3px;
+  line-height: 0.9;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-hero-label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--mut);
+  margin-top: var(--space-2);
+}
+
+.stats-mini-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.stat-mini {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-2);
+  text-align: center;
+}
+
+.stat-mini .stat-icon {
+  justify-content: center;
+  margin-bottom: var(--space-2);
+}
+
+.stat-mini .stat-value {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 2px;
+}
+
+.stat-mini .stat-label {
+  font-size: 9px;
+  letter-spacing: 0.3px;
 }

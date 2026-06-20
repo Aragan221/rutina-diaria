@@ -285,6 +285,8 @@ function updateProgress(shouldSave, allowSound) {
   progressText.textContent = progress + '%';
   progressFill.classList.toggle('full', progress === 100);
 
+  const justCompleted = progress === 100 && !wasAlreadyComplete;
+
   if (progress === 100) {
     completeMessage.classList.add('show');
 
@@ -301,6 +303,33 @@ function updateProgress(shouldSave, allowSound) {
 
   updateStreak();
   updateStats();
+
+  if (justCompleted) {
+    pulseStreak();
+    celebrateChain();
+    if (navigator.vibrate) navigator.vibrate([10, 40, 20]);
+  }
+}
+
+/* ----- Celebracion al completar el dia ----- */
+
+function pulseStreak() {
+  if (!streakNumber) return;
+  streakNumber.classList.remove('pulse');
+  void streakNumber.offsetWidth;
+  streakNumber.classList.add('pulse');
+}
+
+function celebrateChain() {
+  if (!streakChain) return;
+  const links = streakChain.querySelectorAll('.link.on');
+  links.forEach(function (link, idx) {
+    setTimeout(function () {
+      link.classList.remove('celebrate');
+      void link.offsetWidth;
+      link.classList.add('celebrate');
+    }, idx * 55);
+  });
 }
 
 function updateStreak() {
@@ -740,6 +769,14 @@ checkboxes.forEach(function (checkbox) {
 
     if (checkbox.checked) {
       playCheckSound();
+      // Pop del check + vibracion sutil (donde el navegador lo permita)
+      var box = checkbox.closest('.task').querySelector('.custom-checkbox');
+      if (box) {
+        box.classList.remove('pop');
+        void box.offsetWidth;
+        box.classList.add('pop');
+      }
+      if (navigator.vibrate) navigator.vibrate(8);
     } else {
       playUncheckSound();
     }
