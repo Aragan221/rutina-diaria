@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>STREAK — Propuesta de marca</title>
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+    :root { --bg:#000; --ink:#fff; --mut:#8a8a8a; --line:#1c1c1c; --card:#0c0c0c; --ember:#E8A33D; }
+    html { scroll-behavior:smooth; scroll-snap-type:y proximity; }
+    body { background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; line-height:1.5; }
+    .sec { min-height:100vh; min-height:100dvh; scroll-snap-align:start; display:flex; flex-direction:column; justify-content:center; padding:80px 26px; max-width:760px; margin:0 auto; }
+    .tag { color:var(--mut); font-size:12px; font-weight:800; letter-spacing:3px; text-transform:uppercase; margin-bottom:22px; }
+    h1 { font-size:clamp(56px,18vw,120px); font-weight:800; letter-spacing:-4px; line-height:.92; }
+    h2 { font-size:clamp(32px,8vw,52px); font-weight:800; letter-spacing:-1.5px; line-height:1.05; margin-bottom:22px; }
+    h3 { font-size:22px; font-weight:800; letter-spacing:-.4px; margin-bottom:8px; }
+    p { color:#d2d2d2; font-size:clamp(16px,4.4vw,19px); }
+    p.big { font-size:clamp(20px,5.5vw,28px); color:#eee; font-weight:500; letter-spacing:-.3px; }
+    .mut { color:var(--mut); }
+    .ember { color:var(--ember); }
+    .divider { height:1px; background:var(--line); margin:36px 0; }
+    .pill { display:inline-block; border:1px solid var(--line); border-radius:99px; padding:8px 16px; font-size:13px; font-weight:700; color:var(--mut); margin:0 6px 8px 0; }
+
+    /* progreso lateral */
+    .prog { position:fixed; right:14px; top:50%; transform:translateY(-50%); z-index:30; display:flex; flex-direction:column; gap:9px; }
+    .pd { width:6px; height:6px; border-radius:50%; background:#333; transition:all .3s; }
+    .pd.on { background:#fff; height:20px; border-radius:3px; }
+    .hintbar { position:fixed; bottom:18px; left:0; right:0; text-align:center; color:#555; font-size:11px; letter-spacing:1px; z-index:30; animation:fade 4s forwards; }
+    @keyframes fade {0%,75%{opacity:1}100%{opacity:0}}
+
+    /* Logo wordmark */
+    .wordmark { font-size:clamp(40px,13vw,86px); font-weight:800; letter-spacing:6px; }
+    /* símbolo cadena */
+    .symbol { display:flex; gap:8px; margin:30px 0; }
+    .lk { width:34px; height:34px; border-radius:11px; border:3px solid #fff; }
+    .lk.fill { background:#fff; }
+    .lk.gap { border-color:#3a3a3a; }
+
+    /* swatches */
+    .swatches { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-top:24px; }
+    .sw { border:1px solid var(--line); border-radius:18px; overflow:hidden; }
+    .sw .chip { height:90px; }
+    .sw .meta { padding:14px; }
+    .sw .nm { font-weight:800; font-size:15px; }
+    .sw .hex { color:var(--mut); font-size:13px; font-variant-numeric:tabular-nums; }
+
+    /* type specimen */
+    .spec { border-top:1px solid var(--line); padding:18px 0; }
+    .spec .lbl { color:var(--mut); font-size:12px; font-weight:700; letter-spacing:1px; margin-bottom:6px; }
+
+    /* mock */
+    .phone { width:230px; margin:30px auto 0; background:#000; border:1px solid #222; border-radius:34px; padding:22px 18px 26px; box-shadow:0 30px 80px rgba(255,255,255,.06); }
+    .phone .pn { font-size:11px; font-weight:800; letter-spacing:3px; }
+    .phone .pnum { font-size:64px; font-weight:800; letter-spacing:-3px; line-height:1; margin-top:14px; }
+    .phone .psub { color:var(--mut); font-size:11px; margin-top:2px; }
+    .phone .pchain { display:flex; gap:4px; flex-wrap:wrap; margin-top:14px; }
+    .phone .pl { width:12px; height:12px; border-radius:4px; border:1.5px solid #2a2a2a; }
+    .phone .pl.on { background:#fff; border-color:#fff; }
+    .phone .pt { display:flex; align-items:center; gap:9px; background:#0c0c0c; border:1px solid #1a1a1a; border-radius:12px; padding:10px; margin-top:8px; }
+    .phone .pb { width:18px; height:18px; border-radius:50%; border:1.5px solid #333; }
+    .phone .pb.on { background:#fff; border-color:#fff; }
+    .phone .ptx { font-size:12px; color:#ddd; }
+    .phone .pt.done .ptx { text-decoration:line-through; color:#666; }
+
+    .iconrow { display:flex; gap:20px; align-items:center; margin-top:26px; flex-wrap:wrap; }
+    .appicon { width:96px; height:96px; border-radius:22px; background:#000; border:1px solid #222; display:grid; place-items:center; }
+    .appicon .ii { display:flex; gap:5px; }
+    .appicon .iil { width:13px; height:34px; border-radius:5px; background:#fff; }
+    .appicon .iil.g { background:#333; }
+    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:20px; }
+    .box { border:1px solid var(--line); border-radius:16px; padding:18px; }
+    .box .h { font-weight:800; font-size:15px; margin-bottom:6px; }
+    .box .d { color:var(--mut); font-size:14px; }
+    .scrolltip { color:#444; font-size:13px; margin-top:40px; letter-spacing:1px; }
+  </style>
+</head>
+<body>
+
+  <div class="prog" id="prog"></div>
+  <div class="hintbar">DESLIZA HACIA ABAJO ↓</div>
+
+  <!-- 0 · HERO -->
+  <section class="sec" style="justify-content:center;align-items:flex-start;">
+    <div class="tag">Propuesta de identidad · 2026</div>
+    <h1>STREAK</h1>
+    <div class="symbol">
+      <div class="lk fill"></div><div class="lk fill"></div><div class="lk fill"></div><div class="lk gap"></div>
+    </div>
+    <p class="big">No rompas la cadena.</p>
+    <p class="mut" style="margin-top:14px;">Una marca sobre constancia. Un día. Otro. Otro más.</p>
+    <div class="scrolltip">↓ Desliza para ver la propuesta completa</div>
+  </section>
+
+  <!-- 1 · MANIFIESTO -->
+  <section class="sec">
+    <div class="tag">01 · Manifiesto</div>
+    <h2>La disciplina<br>no se grita.<br><span class="mut">Se sostiene.</span></h2>
+    <p class="big">STREAK no es otra app de tareas. Es un recordatorio diario de que ya empezaste — y de que hoy no es el día para parar.</p>
+    <div class="divider"></div>
+    <p>Cada día completado es un eslabón. La fuerza no está en un día perfecto, sino en la cadena que no se rompe. Esa es toda la promesa: <span class="ember">mantener el impulso</span>.</p>
+  </section>
+
+  <!-- 2 · NOMBRE -->
+  <section class="sec">
+    <div class="tag">02 · El nombre</div>
+    <h2>STREAK</h2>
+    <p class="big">/striːk/ · sustantivo · racha</p>
+    <div class="divider"></div>
+    <p>Una sola palabra. Universal. Se pronuncia igual en cualquier idioma y significa exactamente lo que la app hace: <strong>una serie ininterrumpida</strong>.</p>
+    <div style="margin-top:24px;">
+      <span class="pill">Corto</span><span class="pill">Memorable</span><span class="pill">Global</span><span class="pill">Sin traducción</span><span class="pill">Brandeable</span>
+    </div>
+    <p class="mut" style="margin-top:24px;">Como Apple, Nike o Tesla: lo escuchas una vez y se queda.</p>
+  </section>
+
+  <!-- 3 · LOGO -->
+  <section class="sec">
+    <div class="tag">03 · Logotipo</div>
+    <h2>El wordmark</h2>
+    <div class="wordmark">STREAK</div>
+    <p class="mut" style="margin-top:10px;">Tipografía pesada, tracking amplio. Seguro, estable, atlético.</p>
+    <div class="divider"></div>
+    <h3>El símbolo</h3>
+    <div class="symbol">
+      <div class="lk fill"></div><div class="lk fill"></div><div class="lk fill"></div><div class="lk gap"></div>
+    </div>
+    <p>Tres eslabones sólidos y uno vacío: <span class="ember">la cadena en construcción</span>. Funciona como ícono de app, favicon y elemento gráfico recurrente.</p>
+  </section>
+
+  <!-- 4 · COLOR -->
+  <section class="sec">
+    <div class="tag">04 · Color</div>
+    <h2>Mono Noir</h2>
+    <p class="big">Negro absoluto. Blanco puro. Cero ruido.</p>
+    <p class="mut" style="margin-top:12px;">La confianza no necesita colores. El monocromático comunica enfoque, lujo y seriedad — y hace que el contenido sea el protagonista.</p>
+    <div class="swatches">
+      <div class="sw"><div class="chip" style="background:#000;border-bottom:1px solid #1c1c1c;"></div><div class="meta"><div class="nm">Noir</div><div class="hex">#000000 · fondo</div></div></div>
+      <div class="sw"><div class="chip" style="background:#fff;"></div><div class="meta"><div class="nm">Pure</div><div class="hex">#FFFFFF · texto / acción</div></div></div>
+      <div class="sw"><div class="chip" style="background:#0c0c0c;border-bottom:1px solid #1c1c1c;"></div><div class="meta"><div class="nm">Carbon</div><div class="hex">#0C0C0C · tarjetas</div></div></div>
+      <div class="sw"><div class="chip" style="background:#E8A33D;"></div><div class="meta"><div class="nm">Ember <span class="ember">(acento)</span></div><div class="hex">#E8A33D · racha viva</div></div></div>
+    </div>
+    <p class="mut" style="margin-top:20px;">Un único acento ámbar — <span class="ember">Ember</span> — reservado para la racha activa. La chispa que no se apaga.</p>
+  </section>
+
+  <!-- 5 · TIPOGRAFÍA -->
+  <section class="sec">
+    <div class="tag">05 · Tipografía</div>
+    <h2>Una sola voz</h2>
+    <p class="mut">SF Pro / sistema. Limpia, neutra, perfecta en pantalla.</p>
+    <div style="margin-top:20px;">
+      <div class="spec"><div class="lbl">DISPLAY · 800</div><div style="font-size:42px;font-weight:800;letter-spacing:-2px;">12 días</div></div>
+      <div class="spec"><div class="lbl">TÍTULO · 700</div><div style="font-size:24px;font-weight:700;">Rutina de hoy</div></div>
+      <div class="spec"><div class="lbl">CUERPO · 500</div><div style="font-size:17px;font-weight:500;color:#ccc;">Caminar 15 minutos</div></div>
+      <div class="spec"><div class="lbl">ETIQUETA · 800 · +tracking</div><div style="font-size:12px;font-weight:800;letter-spacing:2px;color:#888;">PROGRESO DE HOY</div></div>
+    </div>
+  </section>
+
+  <!-- 6 · SISTEMA -->
+  <section class="sec">
+    <div class="tag">06 · Sistema visual</div>
+    <h2>Los principios</h2>
+    <div class="grid2">
+      <div class="box"><div class="h">Espacio</div><div class="d">El negro vacío es diseño, no falta de él. Respira.</div></div>
+      <div class="box"><div class="h">Jerarquía</div><div class="d">Un dato manda por pantalla: la racha.</div></div>
+      <div class="box"><div class="h">La cadena</div><div class="d">Eslabones como motivo gráfico en toda la app.</div></div>
+      <div class="box"><div class="h">Sin adornos</div><div class="d">Cada elemento gana su lugar o se elimina.</div></div>
+    </div>
+  </section>
+
+  <!-- 7 · VOZ -->
+  <section class="sec">
+    <div class="tag">07 · Voz y tono</div>
+    <h2>Directo.<br>Sin sermones.</h2>
+    <div class="divider"></div>
+    <p class="big">"No rompas la cadena."</p>
+    <p class="big mut">"Hoy también cuenta."</p>
+    <p class="big">"12 días. Sigue."</p>
+    <p class="mut" style="margin-top:22px;">Frases cortas. Segunda persona. Cero culpa, cero relleno. Hablamos como un entrenador que confía en ti.</p>
+  </section>
+
+  <!-- 8 · APLICACIÓN -->
+  <section class="sec">
+    <div class="tag">08 · Aplicación</div>
+    <h2>En pantalla</h2>
+    <div class="phone">
+      <div style="display:flex;justify-content:space-between;align-items:center;"><span class="pn">STREAK</span><span class="psub">Hoy</span></div>
+      <div class="pnum">12</div>
+      <div class="psub">días sin romper la cadena</div>
+      <div class="pchain">
+        <div class="pl on"></div><div class="pl on"></div><div class="pl on"></div><div class="pl on"></div><div class="pl on"></div><div class="pl on"></div><div class="pl on"></div><div class="pl on"></div><div class="pl on"></div><div class="pl on"></div><div class="pl on"></div><div class="pl on"></div><div class="pl"></div><div class="pl"></div>
+      </div>
+      <div style="margin-top:14px;">
+        <div class="pt done"><span class="pb on"></span><span class="ptx">Caminar 15 minutos</span></div>
+        <div class="pt"><span class="pb"></span><span class="ptx">Leer 15 minutos</span></div>
+        <div class="pt"><span class="pb"></span><span class="ptx">Reflexión de la noche</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 · ICONO -->
+  <section class="sec">
+    <div class="tag">09 · Ícono de app</div>
+    <h2>Reconocible<br>a 1 cm</h2>
+    <div class="iconrow">
+      <div class="appicon"><div class="ii"><div class="iil"></div><div class="iil"></div><div class="iil g"></div></div></div>
+      <div>
+        <p>Tres barras: dos llenas, una vacía. La cadena, reducida a su esencia. Funciona en blanco sobre negro y negro sobre blanco.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 · CIERRE -->
+  <section class="sec" style="justify-content:center;align-items:flex-start;">
+    <div class="symbol">
+      <div class="lk fill"></div><div class="lk fill"></div><div class="lk fill"></div><div class="lk gap"></div>
+    </div>
+    <h1 style="font-size:clamp(48px,16vw,100px);">STREAK</h1>
+    <p class="big" style="margin-top:10px;">No rompas la cadena.</p>
+    <div class="divider"></div>
+    <p class="mut">Propuesta creativa y gráfica · Lista para implementar.</p>
+  </section>
+
+  <script>
+    const secs=[...document.querySelectorAll('.sec')];
+    const prog=document.getElementById('prog');
+    secs.forEach((_,i)=>{const d=document.createElement('div');d.className='pd'+(i===0?' on':'');prog.appendChild(d);});
+    const pds=[...prog.children];
+    const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){const i=secs.indexOf(e.target);pds.forEach((p,j)=>p.classList.toggle('on',j===i));}});},{threshold:.5});
+    secs.forEach(s=>io.observe(s));
+  </script>
+</body>
+</html>
