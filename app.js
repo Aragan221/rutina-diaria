@@ -718,6 +718,22 @@ function importBackupFile(event) {
 
 /* ----- Eventos ----- */
 
+/* Stage buttons (Manana/Tarde/Noche) */
+const stageBtns = document.querySelectorAll('.stage-btn');
+const stagePanels = document.querySelectorAll('.stage-panel');
+
+stageBtns.forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    stageBtns.forEach(function (b) { b.classList.remove('active'); });
+    stagePanels.forEach(function (p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+    const stage = btn.dataset.stage;
+    if (stage === 'morning') document.getElementById('stageMorning').classList.add('active');
+    else if (stage === 'afternoon') document.getElementById('stageAfternoon').classList.add('active');
+    else if (stage === 'night') document.getElementById('stageNight').classList.add('active');
+  });
+});
+
 checkboxes.forEach(function (checkbox) {
   checkbox.addEventListener('change', function () {
     updateTaskVisual(checkbox);

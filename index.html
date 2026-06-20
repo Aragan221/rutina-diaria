@@ -22,22 +22,6 @@
 <body>
   <main class="app">
 
-    <!-- Navegador de fecha (compartido, siempre arriba) -->
-    <section class="date-navigator">
-      <button class="arrow-btn" id="prevDayBtn" aria-label="Dia anterior">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-      </button>
-
-      <div class="date-card" id="dateCard" title="Toca para volver a hoy">
-        <div class="date-label" id="dayStatus">Hoy</div>
-        <div class="date-value" id="currentDateLabel">Cargando fecha...</div>
-      </div>
-
-      <button class="arrow-btn" id="nextDayArrowBtn" aria-label="Dia siguiente">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-      </button>
-    </section>
-
     <!-- ==================== TAB: CADENA ==================== -->
     <section class="tab-content active" id="tabCadena">
 
@@ -71,94 +55,101 @@
     <!-- ==================== TAB: RUTINA ==================== -->
     <section class="tab-content" id="tabRutina">
 
-      <section class="section-block">
+      <!-- Navegador de fecha (solo en rutina) -->
+      <section class="date-navigator">
+        <button class="arrow-btn" id="prevDayBtn" aria-label="Dia anterior">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+
+        <div class="date-card" id="dateCard" title="Toca para volver a hoy">
+          <div class="date-label" id="dayStatus">Hoy</div>
+          <div class="date-value" id="currentDateLabel">Cargando fecha...</div>
+        </div>
+
+        <button class="arrow-btn" id="nextDayArrowBtn" aria-label="Dia siguiente">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </section>
+
+      <!-- Botones de etapa -->
+      <div class="stage-buttons">
+        <button class="stage-btn active" data-stage="morning">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <span>Manana</span>
+        </button>
+        <button class="stage-btn" data-stage="afternoon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M1 12h2M21 12h2"/></svg>
+          <span>Tarde</span>
+        </button>
+        <button class="stage-btn" data-stage="night">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          <span>Noche</span>
+        </button>
+      </div>
+
+      <!-- Paneles de tareas por etapa -->
+      <div class="stage-panel active" id="stageMorning">
         <div class="section-title">
           <h2>Manana</h2>
           <span class="time">30-60 min</span>
         </div>
-
         <div class="task-list">
           <label class="task">
             <input type="checkbox" data-task="morning-walk">
-            <span class="custom-checkbox">
-              <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
-            </span>
+            <span class="custom-checkbox"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></span>
             <span class="task-text">Caminar / moverse durante 10-15 min</span>
           </label>
-
           <label class="task">
             <input type="checkbox" data-task="morning-read">
-            <span class="custom-checkbox">
-              <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
-            </span>
+            <span class="custom-checkbox"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></span>
             <span class="task-text">Leer Atomic Habits durante 15 min</span>
           </label>
-
           <label class="task">
             <input type="checkbox" data-task="morning-focus">
-            <span class="custom-checkbox">
-              <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
-            </span>
+            <span class="custom-checkbox"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></span>
             <span class="task-text">Pensar: Que hare hoy que si importa?</span>
           </label>
         </div>
-      </section>
+      </div>
 
-      <div class="section-divider"></div>
-
-      <section class="section-block">
+      <div class="stage-panel" id="stageAfternoon">
         <div class="section-title">
           <h2>Medio dia</h2>
           <span class="time">Opcional</span>
         </div>
-
         <div class="task-list">
           <label class="task">
             <input type="checkbox" data-task="business-task">
-            <span class="custom-checkbox">
-              <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
-            </span>
+            <span class="custom-checkbox"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></span>
             <span class="task-text">Hacer 1 tarea ligera de negocio</span>
           </label>
-
           <p class="subtask">Idea de anuncio / mejorar mensaje / analizar competencia</p>
         </div>
-      </section>
+      </div>
 
-      <div class="section-divider"></div>
-
-      <section class="section-block">
+      <div class="stage-panel" id="stageNight">
         <div class="section-title">
           <h2>Noche</h2>
           <span class="time">20-30 min</span>
         </div>
-
         <div class="task-list">
           <label class="task">
             <input type="checkbox" data-task="night-good">
-            <span class="custom-checkbox">
-              <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
-            </span>
+            <span class="custom-checkbox"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></span>
             <span class="task-text">Reflexion: Que hice bien hoy?</span>
           </label>
-
           <label class="task">
             <input type="checkbox" data-task="night-improve">
-            <span class="custom-checkbox">
-              <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
-            </span>
+            <span class="custom-checkbox"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></span>
             <span class="task-text">Reflexion: Que puedo mejorar?</span>
           </label>
-
           <label class="task">
             <input type="checkbox" data-task="night-pending">
-            <span class="custom-checkbox">
-              <svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg>
-            </span>
+            <span class="custom-checkbox"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></span>
             <span class="task-text">Orden mental: escribir pendientes</span>
           </label>
         </div>
-      </section>
+      </div>
 
       <!-- Cronometro -->
       <div class="section-divider"></div>

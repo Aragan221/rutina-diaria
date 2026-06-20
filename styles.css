@@ -190,9 +190,9 @@ button {
 /* ----- HERO: racha (tab cadena) ----- */
 
 .streak-hero {
-  text-align: left;
+  text-align: center;
   margin-bottom: 28px;
-  padding-top: 8px;
+  padding-top: 60px;
 }
 
 .streak-kicker {
@@ -222,6 +222,7 @@ button {
 .streak-chain {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 6px;
   margin-top: 20px;
 }
@@ -330,6 +331,54 @@ button {
   height: 1px;
   background: var(--line);
   margin: 20px 0;
+}
+
+/* ----- Stage buttons (Manana/Tarde/Noche) ----- */
+
+.stage-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.stage-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--mut);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.stage-btn svg {
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.stage-btn.active {
+  border-color: var(--ink);
+  color: var(--ink);
+  background: var(--surface);
+}
+
+.stage-btn.active svg {
+  opacity: 1;
+}
+
+.stage-panel {
+  display: none;
+}
+
+.stage-panel.active {
+  display: block;
 }
 
 .section-title {
