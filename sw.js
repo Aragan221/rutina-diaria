@@ -1,9 +1,9 @@
-const CACHE_NAME = 'streak-v1.14';
+const CACHE_NAME = 'streak-v1.15';
 const ASSETS = [
   './',
   './index.html',
-  './styles.css',
-  './app.js',
+  './styles.css?v=1.15',
+  './app.js?v=1.15',
   './manifest.json',
   './icon-192.svg',
   './icon-512.svg'
