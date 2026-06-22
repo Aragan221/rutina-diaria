@@ -82,22 +82,24 @@ let soundsEnabled = localStorage.getItem(SOUND_KEY) !== 'false';
 let currentTheme = localStorage.getItem(THEME_KEY) || 'dark';
 
 /* ============================================================
-   Plan de rutina por fecha (semana 23-29 jun 2026)
+   Plan de rutina por fecha (semana real lun 22 - dom 28 jun 2026)
    - Tareas de manana: diarias y CORE (mantienen la cadena).
    - Medio dia: caminata (mar/jue/sab), accion del dia, cero juegos.
    - Noche: InDriver + celular boca abajo (CORE).
+   La base es recurrente por dia de la semana; WEEK_PLAN solo
+   superpone la "accion del dia" especifica de esta semana.
    La cadena se mantiene si se cumplen las tareas CORE
    (manana + soltar el celular), aunque falle el resto.
 ============================================================ */
 
 const WEEK_PLAN = {
-  '2026-06-23': { accion: "Poner alarma 'CELULAR BOCA ABAJO' + planear la semana", caminata: false, noche: 'semana' },
-  '2026-06-24': { accion: 'Enviar mensaje a Sury confirmando cita', caminata: true, noche: 'semana' },
-  '2026-06-25': { accion: 'Llamar al taller: cotizar moto (aceite, luces, frenos) + escribir a un amigo', caminata: false, noche: 'semana' },
-  '2026-06-26': { accion: 'FIRMAR CONTRATO del call center', prioridad: true, caminata: true, noche: 'semana' },
-  '2026-06-27': { accion: 'Cita con Sury (o confirmar fecha alterna)', caminata: false, noche: 'viernes' },
-  '2026-06-28': { accion: null, caminata: true, noche: 'finde', findePlan: 'Plan con la novia (salida)' },
-  '2026-06-29': { accion: null, caminata: false, noche: 'finde', findePlan: 'Descanso real' }
+  '2026-06-22': { accion: "Poner alarma 'CELULAR BOCA ABAJO' + planear la semana" },
+  '2026-06-23': { accion: 'Enviar mensaje a Sury confirmando cita' },
+  '2026-06-24': { accion: 'Llamar al taller: cotizar moto (aceite, luces, frenos) + escribir a un amigo' },
+  '2026-06-25': { accion: 'FIRMAR CONTRATO del call center', prioridad: true },
+  '2026-06-26': { accion: 'Cita con Sury (o confirmar fecha alterna)' },
+  '2026-06-27': { accion: null },
+  '2026-06-28': { accion: null }
 };
 
 function getDayPlan(dateKey) {
