@@ -101,8 +101,24 @@ const WEEK_PLAN = {
 };
 
 function getDayPlan(dateKey) {
-  if (WEEK_PLAN[dateKey]) return WEEK_PLAN[dateKey];
-  return { accion: 'Define tu accion mas importante de hoy', caminata: false, noche: 'semana', prioridad: false };
+  // Base recurrente por dia de la semana (aplica TODOS los dias)
+  const dow = parseDateKey(dateKey).getDay(); // 0=Dom, 1=Lun ... 6=Sab
+  const base = {
+    accion: 'Define tu accion mas importante de hoy',
+    prioridad: false,
+    caminata: (dow === 2 || dow === 4 || dow === 6), // martes, jueves, sabado
+    noche: 'semana'
+  };
+  if (dow === 5) base.noche = 'viernes';           // viernes: pico y placa
+  if (dow === 6) { base.noche = 'finde'; base.findePlan = 'Plan con la novia (salida)'; }
+  if (dow === 0) { base.noche = 'finde'; base.findePlan = 'Descanso real'; }
+
+  // Superponer el plan especifico de la semana 23-29 jun (acciones del dia)
+  const override = WEEK_PLAN[dateKey];
+  if (override) {
+    return Object.assign({}, base, override);
+  }
+  return base;
 }
 
 function buildTaskHTML(t) {
