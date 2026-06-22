@@ -43,10 +43,10 @@
       </section>
 
       <section class="message" id="completeMessage">
-        <h3>Cadena intacta</h3>
+        <h3>Cadena asegurada</h3>
         <p>
-          Un eslabon mas. Hoy no ganaste por hacerlo perfecto,
-          ganaste por no romper la cadena.
+          Cumpliste lo esencial: arrancaste el dia y soltaste el celular.
+          No se trata de un dia perfecto, sino de no romper la cadena.
         </p>
       </section>
 
@@ -87,69 +87,10 @@
         </button>
       </div>
 
-      <!-- Paneles de tareas por etapa -->
-      <div class="stage-panel active" id="stageMorning">
-        <div class="section-title">
-          <h2>Manana</h2>
-          <span class="time">30-60 min</span>
-        </div>
-        <div class="task-list">
-          <label class="task">
-            <input type="checkbox" data-task="morning-walk">
-            <span class="custom-checkbox"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></span>
-            <span class="task-text">Caminar / moverse durante 10-15 min</span>
-          </label>
-          <label class="task">
-            <input type="checkbox" data-task="morning-read">
-            <span class="custom-checkbox"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></span>
-            <span class="task-text">Leer Atomic Habits durante 15 min</span>
-          </label>
-          <label class="task">
-            <input type="checkbox" data-task="morning-focus">
-            <span class="custom-checkbox"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></span>
-            <span class="task-text">Pensar: Que hare hoy que si importa?</span>
-          </label>
-        </div>
-      </div>
-
-      <div class="stage-panel" id="stageAfternoon">
-        <div class="section-title">
-          <h2>Medio dia</h2>
-          <span class="time">Opcional</span>
-        </div>
-        <div class="task-list">
-          <label class="task">
-            <input type="checkbox" data-task="business-task">
-            <span class="custom-checkbox"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></span>
-            <span class="task-text">Hacer 1 tarea ligera de negocio</span>
-          </label>
-          <p class="subtask">Idea de anuncio / mejorar mensaje / analizar competencia</p>
-        </div>
-      </div>
-
-      <div class="stage-panel" id="stageNight">
-        <div class="section-title">
-          <h2>Noche</h2>
-          <span class="time">20-30 min</span>
-        </div>
-        <div class="task-list">
-          <label class="task">
-            <input type="checkbox" data-task="night-good">
-            <span class="custom-checkbox"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></span>
-            <span class="task-text">Reflexion: Que hice bien hoy?</span>
-          </label>
-          <label class="task">
-            <input type="checkbox" data-task="night-improve">
-            <span class="custom-checkbox"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></span>
-            <span class="task-text">Reflexion: Que puedo mejorar?</span>
-          </label>
-          <label class="task">
-            <input type="checkbox" data-task="night-pending">
-            <span class="custom-checkbox"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></span>
-            <span class="task-text">Orden mental: escribir pendientes</span>
-          </label>
-        </div>
-      </div>
+      <!-- Paneles de tareas por etapa (se generan dinamicamente por fecha) -->
+      <div class="stage-panel active" id="stageMorning"></div>
+      <div class="stage-panel" id="stageAfternoon"></div>
+      <div class="stage-panel" id="stageNight"></div>
 
       <!-- Cronometro -->
       <div class="section-divider"></div>
@@ -357,7 +298,7 @@
       </section>
 
       <footer>
-        STREAK v1.9
+        STREAK v1.11
       </footer>
 
     </section>

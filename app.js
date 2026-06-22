@@ -19,7 +19,7 @@ const tabContents = document.querySelectorAll('.tab-content');
 
 /* ----- DOM: Tareas y notas ----- */
 
-const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+let checkboxes = [];
 const notes = document.querySelectorAll('textarea');
 
 /* ----- DOM: Progreso y racha ----- */
@@ -80,6 +80,109 @@ let noteSaveTimeout = null;
 let audioContext = null;
 let soundsEnabled = localStorage.getItem(SOUND_KEY) !== 'false';
 let currentTheme = localStorage.getItem(THEME_KEY) || 'dark';
+
+/* ============================================================
+   Plan de rutina por fecha (semana 23-29 jun 2026)
+   - Tareas de manana: diarias y CORE (mantienen la cadena).
+   - Medio dia: caminata (mar/jue/sab), accion del dia, cero juegos.
+   - Noche: InDriver + celular boca abajo (CORE).
+   La cadena se mantiene si se cumplen las tareas CORE
+   (manana + soltar el celular), aunque falle el resto.
+============================================================ */
+
+const WEEK_PLAN = {
+  '2026-06-23': { accion: "Poner alarma 'CELULAR BOCA ABAJO' + planear la semana", caminata: false, noche: 'semana' },
+  '2026-06-24': { accion: 'Enviar mensaje a Sury confirmando cita', caminata: true, noche: 'semana' },
+  '2026-06-25': { accion: 'Llamar al taller: cotizar moto (aceite, luces, frenos) + escribir a un amigo', caminata: false, noche: 'semana' },
+  '2026-06-26': { accion: 'FIRMAR CONTRATO del call center', prioridad: true, caminata: true, noche: 'semana' },
+  '2026-06-27': { accion: 'Cita con Sury (o confirmar fecha alterna)', caminata: false, noche: 'viernes' },
+  '2026-06-28': { accion: null, caminata: true, noche: 'finde', findePlan: 'Plan con la novia (salida)' },
+  '2026-06-29': { accion: null, caminata: false, noche: 'finde', findePlan: 'Descanso real' }
+};
+
+function getDayPlan(dateKey) {
+  if (WEEK_PLAN[dateKey]) return WEEK_PLAN[dateKey];
+  return { accion: 'Define tu accion mas importante de hoy', caminata: false, noche: 'semana', prioridad: false };
+}
+
+function buildTaskHTML(t) {
+  return '<label class="task">'
+    + '<input type="checkbox" data-task="' + t.id + '"' + (t.core ? ' data-core="true"' : '') + '>'
+    + '<span class="custom-checkbox"><svg viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"></path></svg></span>'
+    + '<span class="task-text">' + t.text + '</span>'
+    + '</label>'
+    + (t.sub ? '<p class="subtask">' + t.sub + '</p>' : '');
+}
+
+function titleHTML(name, time) {
+  return '<div class="section-title"><h2>' + name + '</h2><span class="time">' + time + '</span></div>';
+}
+
+function listHTML(tasks) {
+  return '<div class="task-list">' + tasks.map(buildTaskHTML).join('') + '</div>';
+}
+
+function renderTasks(dateKey) {
+  const plan = getDayPlan(dateKey);
+
+  const morning = [
+    { id: 'm-alarm', text: 'Levantarme con la alarma (sin posponer)', core: true },
+    { id: 'm-water', text: 'Vaso de agua al despertar', core: true },
+    { id: 'm-breakfast', text: 'Desayunar algo (comer aunque sea poco)', core: true }
+  ];
+
+  const afternoon = [];
+  if (plan.caminata) afternoon.push({ id: 'a-walk', text: 'Caminata 20 min' });
+  if (plan.accion) afternoon.push({ id: 'a-action', text: (plan.prioridad ? 'PRIORIDAD: ' : '') + plan.accion });
+  afternoon.push({ id: 'a-nogames', text: 'Cero videojuegos hasta completar la accion del dia' });
+
+  const night = [];
+  if (plan.noche === 'viernes') {
+    night.push({ id: 'n-picoyplaca', text: 'Pico y placa (XTQ80G): NO InDriver hasta las 8pm' });
+    night.push({ id: 'n-indriver', text: 'InDriver desde 8pm (meta $60k)', sub: 'Luces danadas: trabaja solo en zonas bien iluminadas' });
+  } else if (plan.noche === 'finde') {
+    night.push({ id: 'n-indriver', text: 'InDriver turno largo 6am-12pm (meta $90k)', sub: 'Prioriza luz natural (luces danadas)' });
+    if (plan.findePlan) night.push({ id: 'n-finde', text: plan.findePlan });
+  } else {
+    night.push({ id: 'n-indriver', text: 'InDriver 8pm-12am (meta $60k)', sub: 'Luces danadas: zonas bien iluminadas' });
+  }
+  night.push({
+    id: 'n-phone',
+    text: plan.noche === 'finde' ? 'Celular boca abajo y dormir a tiempo' : 'Celular boca abajo (12:30am si trabaje / 10:30pm si no)',
+    core: true
+  });
+
+  const nightTime = plan.noche === 'finde' ? '6am-12pm' : '8pm-12am';
+
+  document.getElementById('stageMorning').innerHTML = titleHTML('Manana', 'antes 7am') + listHTML(morning);
+  document.getElementById('stageAfternoon').innerHTML = titleHTML('Medio dia', '4pm-6pm') + listHTML(afternoon);
+  document.getElementById('stageNight').innerHTML = titleHTML('Noche', nightTime) + listHTML(night);
+
+  checkboxes = document.querySelectorAll('.task-list input[type="checkbox"]');
+  checkboxes.forEach(function (cb) {
+    cb.addEventListener('change', function () { handleTaskToggle(cb); });
+  });
+}
+
+function handleTaskToggle(checkbox) {
+  updateTaskVisual(checkbox);
+
+  if (checkbox.checked) {
+    playCheckSound();
+    var box = checkbox.closest('.task').querySelector('.custom-checkbox');
+    if (box) {
+      box.classList.remove('pop');
+      void box.offsetWidth;
+      box.classList.add('pop');
+    }
+    if (navigator.vibrate) navigator.vibrate(8);
+  } else {
+    playUncheckSound();
+  }
+
+  updateProgress(true, true);
+  showSavedStatus();
+}
 
 /* ----- Navegacion por tabs ----- */
 
@@ -191,7 +294,7 @@ function saveCurrentDay() {
   });
 
   dayData.timerSeconds = timerSeconds;
-  dayData.completed = areAllTasksCompleted();
+  dayData.completed = areCoreTasksCompleted();
   dayData.updatedAt = new Date().toISOString();
 
   allData[selectedDate] = dayData;
@@ -200,6 +303,8 @@ function saveCurrentDay() {
 
 function loadSelectedDay() {
   stopTimer(false);
+
+  renderTasks(selectedDate);
 
   const dayData = getDayData(selectedDate);
 
@@ -271,23 +376,31 @@ function areAllTasksCompleted() {
   return [...checkboxes].every(function (checkbox) { return checkbox.checked; });
 }
 
+// La cadena se mantiene si se cumplen las tareas CORE (manana + soltar el celular)
+function areCoreTasksCompleted() {
+  const core = [...checkboxes].filter(function (cb) { return cb.dataset.core === 'true'; });
+  if (core.length === 0) return false;
+  return core.every(function (cb) { return cb.checked; });
+}
+
 function updateProgress(shouldSave, allowSound) {
   if (shouldSave === undefined) shouldSave = true;
   if (allowSound === undefined) allowSound = false;
 
   const totalTasks = checkboxes.length;
   const completedTasks = [...checkboxes].filter(function (checkbox) { return checkbox.checked; }).length;
-  const progress = Math.round((completedTasks / totalTasks) * 100);
+  const progress = totalTasks ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
+  const coreDone = areCoreTasksCompleted();
   const wasAlreadyComplete = completeMessage.classList.contains('show');
 
   progressFill.style.width = progress + '%';
   progressText.textContent = progress + '%';
   progressFill.classList.toggle('full', progress === 100);
 
-  const justCompleted = progress === 100 && !wasAlreadyComplete;
+  const justCompleted = coreDone && !wasAlreadyComplete;
 
-  if (progress === 100) {
+  if (coreDone) {
     completeMessage.classList.add('show');
 
     if (allowSound && !wasAlreadyComplete) {
@@ -763,28 +876,7 @@ stageBtns.forEach(function (btn) {
   });
 });
 
-checkboxes.forEach(function (checkbox) {
-  checkbox.addEventListener('change', function () {
-    updateTaskVisual(checkbox);
-
-    if (checkbox.checked) {
-      playCheckSound();
-      // Pop del check + vibracion sutil (donde el navegador lo permita)
-      var box = checkbox.closest('.task').querySelector('.custom-checkbox');
-      if (box) {
-        box.classList.remove('pop');
-        void box.offsetWidth;
-        box.classList.add('pop');
-      }
-      if (navigator.vibrate) navigator.vibrate(8);
-    } else {
-      playUncheckSound();
-    }
-
-    updateProgress(true, true);
-    showSavedStatus();
-  });
-});
+/* Las tareas (checkboxes) se generan y enlazan en renderTasks() por fecha */
 
 notes.forEach(function (note) {
   note.addEventListener('input', debounceSaveNotes);
