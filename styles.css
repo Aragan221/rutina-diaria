@@ -140,7 +140,10 @@ button {
 }
 
 .tab-content.active {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100dvh - var(--tab-height) - 90px);
   animation: fadeTab 0.15s ease;
 }
 
@@ -856,14 +859,7 @@ footer {
   transition: transform 0.12s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease, opacity 0.2s ease;
 }
 
-/* ----- 2. Tab Cadena: centrado vertical (sin espacio muerto) ----- */
-
-#tabCadena.active {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: calc(100dvh - var(--tab-height) - 110px);
-}
+/* ----- 2. Tab Cadena: ajuste del hero (centrado heredado de .tab-content) ----- */
 
 #tabCadena .streak-hero {
   padding-top: 0;
