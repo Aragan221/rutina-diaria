@@ -7,7 +7,7 @@
 App web personal para construir disciplina y constancia. Un eslabon a la vez.
 
 [![App en vivo](https://img.shields.io/badge/▶_Abrir_STREAK-000000?style=for-the-badge)](https://aragan221.github.io/rutina-diaria/)
-[![Version](https://img.shields.io/badge/versión-v1.11-111111?style=for-the-badge)](#-versiones)
+[![Version](https://img.shields.io/badge/versión-v1.15-111111?style=for-the-badge)](#-versiones)
 [![Estado](https://img.shields.io/badge/estado-activo-e8a33d?style=for-the-badge)](#-estado-del-proyecto)
 
 ![HTML](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
@@ -85,13 +85,15 @@ rutina-diaria/
 ├── index.html       -> Estructura (HTML) con tabs
 ├── styles.css       -> Identidad Mono Noir + tabs (CSS)
 ├── app.js           -> Logica de la app + navegacion tabs (JS)
-├── sw.js            -> Service Worker (cache offline)
+├── sw.js            -> Service Worker (cache offline, network-first)
 ├── manifest.json    -> Manifest PWA
 ├── icon-192.svg     -> Icono (simbolo de cadena)
 ├── icon-512.svg     -> Icono (simbolo de cadena)
 ├── marca.html       -> Brand book / propuesta creativa
 ├── propuestas.html  -> Las 5 propuestas iniciales de rebranding
 ├── finalistas.html  -> Las 3 finalistas (STREAK, FORJA, NORTE)
+├── CHANGELOG.md     -> Historial detallado de versiones
+├── aprendizajes/    -> Documentos de aprendizaje UI/UX
 └── README.md        -> Este archivo
 ```
 
@@ -146,8 +148,14 @@ Los datos se guardan en el navegador (`localStorage`). Puedes **exportar** un re
 | `v1.6` | Rebranding a STREAK | Nueva identidad Mono Noir, racha como protagonista, cadena de eslabones, acento Ember |
 | `v1.7` | Tabs + SVG | Navegacion por tabs, sin tarjetas flotantes, iconos SVG de linea, estadisticas, configuracion separada |
 | `v1.8` | **Rutina por etapas** | Racha centrada, fecha solo en Rutina, botones Manana/Tarde/Noche, cache network-first (siempre actualizado) |
-| `v1.10` | **Polish UI** | Aprendizajes de diseño aplicados: feedback tactil, jerarquia en Stats, micro-interacciones, celebracion al completar |
+| `v1.10` | **Polish UI** | Aprendizajes de diseno aplicados: feedback tactil, jerarquia en Stats, micro-interacciones, celebracion al completar |
 | `v1.11` | **Rutina dinamica** | Tareas por fecha (accion del dia, caminata mar/jue/sab, fines de semana), cadena basada en tareas CORE (manana + soltar celular), config InDriver |
+| `v1.12` | **Polish + celebracion** | Vibration API, animacion pop en checkboxes, pulse en racha, celebracion escalonada en eslabones |
+| `v1.13` | **Semana real** | Plan especifico lun 22 - dom 28 jun 2026, acciones del dia reales, InDriver con horarios y restricciones |
+| `v1.14` | **SW network-first** | Service Worker reescrito: network-first, skipWaiting, clients.claim, limpieza de caches viejos |
+| `v1.15` | **Cache-busting** | Query strings `?v=1.15` en CSS/JS para forzar version nueva sin cache viejo |
+
+> Detalle completo en [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
@@ -155,7 +163,7 @@ Los datos se guardan en el navegador (`localStorage`). Puedes **exportar** un re
 
 Proyecto activo y en mejora continua.
 
-La version mas reciente es **`v1.11`**, publicada mediante GitHub Pages.
+La version mas reciente es **`v1.15`**, publicada mediante GitHub Pages.
 
 <div align="center">
 
