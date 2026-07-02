@@ -62,11 +62,14 @@
 
   /* ---- content ---- */
   #content{flex:1; overflow:hidden; padding:0 16px 12px 16px; position:relative;}
-  .section{display:none; height:100%; flex-direction:column;}
+  .section{display:none; height:100%; flex-direction:column; overflow:hidden;}
   .section.active{display:flex;}
   /* Métricas es pantalla de revisión/ajustes (no parte del flujo cronometrado), permite scroll interno
      como red de seguridad en celulares chicos con las filas de meta+agua agregadas */
   #sec-metricas.section{overflow-y:auto; -webkit-overflow-scrolling:touch;}
+  /* InDriver: permitir scroll en toda la sección */
+  #sec-indriver.section{overflow:visible;}
+  #sec-indriver .indriver-wrap{overflow-y:auto; -webkit-overflow-scrolling:touch; flex:1;}
 
   .section-title{font-size:11px; color:var(--mut); margin:10px 0 8px 0; font-weight:800;
     text-transform:uppercase; letter-spacing:2px;}
@@ -134,7 +137,7 @@
   .rating-btn.sel{background:var(--accent); border-color:var(--accent);}
 
   /* ---- InDriver module ---- */
-  .indriver-wrap{display:flex; flex-direction:column; height:100%; overflow:hidden;}
+  .indriver-wrap{display:flex; flex-direction:column; height:100%; overflow-y:auto; -webkit-overflow-scrolling:touch;}
   .turno-btn{width:100%; padding:15px; border-radius:14px; border:none; font-size:14px; font-weight:800;
     margin-bottom:10px; text-transform:uppercase; letter-spacing:1px;}
   .turno-btn.start{background:var(--ink); color:#000;}
@@ -1023,6 +1026,13 @@
   }
 
   // ---- registro con voz ----
+  // Convierte voz en español a un número EN MILES (formato k).
+  // Ejemplo: "ocho" → 8, "ocho mil" → 8, "quince mil" → 15,
+  // "diez" → 10, "ciento veinte mil" → 120.
+  // El input trabaja en k (se multiplica x1000 al guardar), así que:
+  //   - Si el resultado es ≥1000, asumimos que dijo "X mil" → dividir /1000.
+  //   - Si el resultado es <1000, se usa directo (ya es el valor en k).
+  // Solo devuelve números, nunca letras.
   function parseSpanishNumber(text){
     text = text.toLowerCase()
       .replace(/í/g,'i').replace(/ó/g,'o').replace(/á/g,'a').replace(/é/g,'e').replace(/ú/g,'u')
@@ -1034,7 +1044,7 @@
     var hundreds = {cien:100,ciento:100,doscientos:200,trescientos:300,cuatrocientos:400,quinientos:500,
       seiscientos:600,setecientos:700,ochocientos:800,novecientos:900};
     var words = text.split(/\s+/).filter(Boolean);
-    var total = 0, found = false, i = 0;
+    var total = 0, found = false, i = 0, hadMil = false;
     while(i < words.length){
       var w = words[i];
       if(hundreds[w] != null){ total += hundreds[w]; found = true; i++; continue; }
@@ -1044,12 +1054,18 @@
         continue;
       }
       if(units[w] != null){ total += units[w]; found = true; i++; continue; }
-      if(w === 'mil'){ total = (total || 1) * 1000; found = true; i++; continue; }
+      if(w === 'mil'){ total = (total || 1) * 1000; found = true; hadMil = true; i++; continue; }
       i++;
     }
-    if(found) return total;
-    var direct = text.match(/\d+/);
-    return direct ? parseInt(direct[0],10) : null;
+    // Si no encontró palabras numéricas, buscar dígitos directos
+    if(!found){
+      var direct = text.match(/\d+/);
+      if(direct) { total = parseInt(direct[0],10); found = true; hadMil = total >= 1000; }
+    }
+    if(!found) return null;
+    // Convertir a formato k: si es ≥1000, dividir entre 1000
+    if(total >= 1000) return Math.round(total / 1000);
+    return total;
   }
 
   var SpeechRecognitionCtor = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1082,12 +1098,14 @@
     recognition.addEventListener('result', function(e){
       var transcript = (e.results[0][0].transcript || '').trim();
       var low = transcript.toLowerCase();
+      // Solo extraer número — ignorar todo lo demás
       var num = parseSpanishNumber(low);
-      if(num == null){
-        micHint.textContent = 'No entendí un número en: "'+transcript+'"';
+      if(num == null || num <= 0){
+        micHint.textContent = 'Di un número (ej: "ocho", "quince mil")';
         setTimeout(function(){ micHint.textContent=''; }, 2800);
         return;
       }
+      // Detectar tipo por contexto (propina/gasto) si lo mencionó
       var isPropina = /propina/.test(low);
       var expenseType = /gasolina|tanque/.test(low) ? 'gasolina'
                        : /comida|almuerzo|hamburguesa/.test(low) ? 'comida'
@@ -1096,9 +1114,11 @@
       propinaActive = isPropina && !expenseType;
       propinaBtn.classList.toggle('active', propinaActive);
       refreshQuickBtns();
+      // Poner SOLO el número en el input (formato k)
       carreraInput.value = num;
+      updateEntryUnit();
       addRecord();
-      micHint.textContent = 'Agregado desde: "'+transcript+'"';
+      micHint.textContent = num + 'k agregado';
       setTimeout(function(){ micHint.textContent=''; }, 2200);
     });
   } else {
