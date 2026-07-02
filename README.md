@@ -1,13 +1,13 @@
 <div align="center">
 
-# STREAK
+# Rutina Diaria
 
-**No rompas la cadena.**
+**Tracker personal de rutina + ingresos InDriver.**
 
-App web personal para construir disciplina y constancia. Un eslabon a la vez.
+App web para organizar el dia completo: manana, trabajo, turno InDriver, cierre y metricas.
 
-[![App en vivo](https://img.shields.io/badge/▶_Abrir_STREAK-000000?style=for-the-badge)](https://aragan221.github.io/rutina-diaria/)
-[![Version](https://img.shields.io/badge/versión-v1.15-111111?style=for-the-badge)](#-versiones)
+[![App en vivo](https://img.shields.io/badge/▶_Abrir_App-000000?style=for-the-badge)](https://aragan221.github.io/rutina-diaria/)
+[![Version](https://img.shields.io/badge/versión-v2.0-111111?style=for-the-badge)](#-versiones)
 [![Estado](https://img.shields.io/badge/estado-activo-e8a33d?style=for-the-badge)](#-estado-del-proyecto)
 
 ![HTML](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
@@ -22,59 +22,66 @@ App web personal para construir disciplina y constancia. Un eslabon a la vez.
 
 ## Que es?
 
-**STREAK** es una app web minimalista para sostener una rutina diaria. Su filosofia es simple: cada dia completado es un **eslabon** de una cadena que no se debe romper. La fuerza no esta en un dia perfecto, sino en **la constancia que no se interrumpe**.
+Un **tracker diario todo-en-uno** para mantener disciplina, registrar ingresos de InDriver y medir metricas de salud/productividad. Todo en una sola pagina, sin frameworks, funciona offline como PWA.
 
-Identidad visual **Mono Noir**: negro absoluto, blanco puro y un unico acento ambar (**Ember**) reservado para la racha viva.
+Identidad visual **Mono Noir**: negro absoluto, blanco puro y acento ambar **Ember** (`#E8A33D`).
 
 ---
 
-## Navegacion por tabs (v1.7)
-
-La app se organiza en **5 secciones** accesibles desde una barra inferior fija:
+## Navegacion por tabs
 
 | Tab | Contenido |
 |:---:|---|
-| **Cadena** | Racha hero + eslabones (14 dias) + progreso del dia |
-| **Rutina** | Tareas organizadas (manana / medio dia / noche) + cronometro |
-| **Notas** | Bloc de notas del dia (4 campos) |
-| **Stats** | Estadisticas: % completado, tiempo enfocado, tareas hechas, racha |
-| **Config** | Tema, sonido, respaldo (exportar/importar), recordatorios, acciones del dia |
+| **Manana** | Rutina matutina paginada (despertar, agua, luz solar, desayuno, post-it) |
+| **Trabajo** | 7 bloques de trabajo con breaks cronometrados |
+| **InDriver** | Modulo completo: turno, carreras, propinas, gastos, meta, voz |
+| **Cierre** | Rutina nocturna: numeros, magnesio, TCC, celular lejos, dormir |
+| **Metricas** | Peso, neto, agua, caminata, dormir, rating, export .md |
 
 ---
 
-## Identidad de marca
+## Modulo InDriver
 
-| Elemento | Definicion |
+El corazon de la app para el turno nocturno:
+
+- **Iniciar/Terminar turno** con cronometro en vivo
+- **Entrada grande** de monto (en miles / formato k)
+- **Propina** y **gastos rapidos** (gasolina, app, comida)
+- **Reconocimiento de voz** (Speech API, es-CO): di "ocho" y pone 8
+- **Listado** de registros con boton borrar
+- **Resumen en vivo**: bruto, gastos, neto
+- **Barra de meta** con alertas al 80% y 100% (vibra + flash)
+- **Meta ajustable** desde el tab Metricas
+
+---
+
+## Metricas diarias
+
+| Metrica | Tipo |
 |---|---|
-| **Nombre** | STREAK |
-| **Tagline** | No rompas la cadena |
-| **Color base** | Noir `#000000` + Pure `#FFFFFF` |
-| **Acento** | Ember `#E8A33D` (solo para la racha viva) |
-| **Simbolo** | La cadena: eslabones que se llenan dia a dia |
-| **Iconos** | SVG de linea (stroke), minimalistas, estilo SF Symbols |
-| **Tono** | Directo, sin culpa, como un entrenador que confia en ti |
+| Peso (kg) | Manual, con tendencia vs ayer |
+| Neto InDriver | Auto (calculado de los registros) |
+| Agua | Overlay con conteo de vasos (meta 2L) |
+| Caminata almuerzo | Si / No |
+| Dormir antes 1am | Si / No |
+| Checklist pre-turno | 0-5 |
+| Rating del dia | Emoji (4 niveles) |
 
 ---
 
-## Funciones principales
+## Funciones clave
 
 | Funcion | Detalle |
 |---|---|
-| Cadena de eslabones | Ultimos 14 dias visualizados |
-| Navegacion por dias | Flechas + tap para volver a hoy |
-| Checklist de rutina | Manana, medio dia, noche |
-| Barra de progreso | Porcentaje del dia |
-| Racha como protagonista | Numero grande + texto |
-| Cronometro de enfoque | Inicio, pausa, reinicio |
-| Notas por fecha | 4 campos independientes por dia |
-| Estadisticas del dia | % completado, tiempo, tareas, racha |
-| Tema Noir / claro | Toggle en configuracion |
-| Sonidos Web Audio API | Toggle en configuracion |
-| Exportar/importar respaldo | Archivo JSON completo |
-| Recordatorios .ics | Eventos recurrentes al calendario |
-| PWA instalable | Offline + icono en pantalla |
-| Iconos SVG | Sin emojis, solo iconos de linea |
-| Navegacion por tabs | Barra inferior fija tipo app nativa |
+| Fecha logica | El dia cambia a las 4am (no a medianoche) |
+| Auto-archivo | Al cambiar de dia, guarda el anterior (hasta 60 dias) |
+| Swipe-to-check | Deslizar item a la derecha tambien lo marca |
+| Timers con anillo | SVG animado + sonido al terminar |
+| Post-it editable | Persiste entre dias, toca para editar |
+| Celebracion | Confetti + flash dorado al completar un tab |
+| Export .md | Historial completo en Markdown (metricas + checks + InDriver) |
+| Reset seguro | Modal con frase "ESTOY SEGURO" para evitar accidentes |
+| Toast | Notificaciones efimeras para feedback |
 
 ---
 
@@ -82,78 +89,57 @@ La app se organiza en **5 secciones** accesibles desde una barra inferior fija:
 
 ```
 rutina-diaria/
-├── index.html       -> Estructura (HTML) con tabs
-├── styles.css       -> Identidad Mono Noir + tabs (CSS)
-├── app.js           -> Logica de la app + navegacion tabs (JS)
-├── sw.js            -> Service Worker (cache offline, network-first)
-├── manifest.json    -> Manifest PWA
-├── icon-192.svg     -> Icono (simbolo de cadena)
-├── icon-512.svg     -> Icono (simbolo de cadena)
-├── marca.html       -> Brand book / propuesta creativa
-├── propuestas.html  -> Las 5 propuestas iniciales de rebranding
-├── finalistas.html  -> Las 3 finalistas (STREAK, FORJA, NORTE)
-├── CHANGELOG.md     -> Historial detallado de versiones
-├── aprendizajes/    -> Documentos de aprendizaje UI/UX
-└── README.md        -> Este archivo
+├── index.html                       -> App completa (HTML + CSS + JS)
+├── tracker-indriver-entry-grande.html -> Archivo fuente del rediseno v2
+├── sw.js                            -> Service Worker (network-first)
+├── manifest.json                    -> Manifest PWA
+├── icon-192.svg                     -> Icono PWA
+├── icon-512.svg                     -> Icono PWA
+├── app.js                           -> (legacy v1.15, ya no se usa)
+├── styles.css                       -> (legacy v1.15, ya no se usa)
+├── marca.html                       -> Brand book original
+├── propuestas.html                  -> Propuestas de rebranding
+├── finalistas.html                  -> Finalistas (STREAK, FORJA, NORTE)
+├── CHANGELOG.md                     -> Historial detallado de versiones
+├── aprendizajes/                    -> Documentos de aprendizaje UI/UX
+└── README.md                        -> Este archivo
 ```
 
-> HTML/CSS/JS puro: **sin frameworks, sin build, sin dependencias.** Funciona tal cual en GitHub Pages.
+> **Sin frameworks, sin build, sin dependencias.** Un solo archivo HTML funciona en GitHub Pages.
 
 ---
 
 ## Instalacion en iPhone (PWA)
 
-1. Abrir la app en **Safari** (no Chrome).
-2. Tocar **Compartir** (cuadradito con flecha).
-3. **"Agregar a pantalla de inicio"**.
-4. Listo: pantalla completa, icono propio y funciona **offline**.
+1. Abrir en **Safari** → Compartir → "Agregar a pantalla de inicio"
+2. Funciona a pantalla completa, offline, con icono propio
 
-> Tambien en Android: Chrome -> menu -> "Instalar aplicacion".
+> Android: Chrome → menu → "Instalar aplicacion"
 
 ---
 
-## Recordatorios al calendario
+## Tecnologias
 
-1. Ir al tab **Config**.
-2. Elegir la hora de la rutina de **manana** y de **noche**.
-3. Tocar **"Descargar recordatorios (.ics)"**.
-4. Abrir el archivo -> se importan 2 eventos recurrentes al Calendario.
-
----
-
-## Respaldo de informacion
-
-Los datos se guardan en el navegador (`localStorage`). Puedes **exportar** un respaldo `.json` (dias, tareas, notas, cronometros, preferencias) e **importarlo** para recuperarlo en otro dispositivo.
-
-> Usa siempre el mismo navegador y link, no borres los datos del sitio, y exporta un respaldo cada cierto tiempo.
-
----
-
-## Tecnologias usadas
-
-`HTML` - `CSS` - `JavaScript` - `localStorage` - `Web Audio API` - `Service Worker` - `PWA` - `GitHub Pages`
+`HTML` · `CSS` · `JavaScript` · `localStorage` · `Web Audio API` · `Speech Recognition API` · `Service Worker` · `PWA` · `GitHub Pages`
 
 ---
 
 ## Versiones
 
-| Version | Nombre | Aporte principal |
-|:---:|---|---|
-| `v1.0` | Version estable inicial | Navegacion por dias, checklist, progreso, racha, cronometro y notas |
-| `v1.1` | Version con sonidos | Sonidos suaves al marcar tareas y navegar |
-| `v1.2` | Version con respaldo | Exportar e importar respaldo en JSON |
-| `v1.3` | Modo oscuro premium | Tema claro/oscuro con tonos calidos |
-| `v1.4` | Refactor con IA | Separacion en HTML/CSS/JS y limpieza de codigo duplicado |
-| `v1.5` | PWA + Recordatorios | App instalable + recordatorios al calendario (.ics) |
-| `v1.6` | Rebranding a STREAK | Nueva identidad Mono Noir, racha como protagonista, cadena de eslabones, acento Ember |
-| `v1.7` | Tabs + SVG | Navegacion por tabs, sin tarjetas flotantes, iconos SVG de linea, estadisticas, configuracion separada |
-| `v1.8` | **Rutina por etapas** | Racha centrada, fecha solo en Rutina, botones Manana/Tarde/Noche, cache network-first (siempre actualizado) |
-| `v1.10` | **Polish UI** | Aprendizajes de diseno aplicados: feedback tactil, jerarquia en Stats, micro-interacciones, celebracion al completar |
-| `v1.11` | **Rutina dinamica** | Tareas por fecha (accion del dia, caminata mar/jue/sab, fines de semana), cadena basada en tareas CORE (manana + soltar celular), config InDriver |
-| `v1.12` | **Polish + celebracion** | Vibration API, animacion pop en checkboxes, pulse en racha, celebracion escalonada en eslabones |
-| `v1.13` | **Semana real** | Plan especifico lun 22 - dom 28 jun 2026, acciones del dia reales, InDriver con horarios y restricciones |
-| `v1.14` | **SW network-first** | Service Worker reescrito: network-first, skipWaiting, clients.claim, limpieza de caches viejos |
-| `v1.15` | **Cache-busting** | Query strings `?v=1.15` en CSS/JS para forzar version nueva sin cache viejo |
+| Version | Cambio principal |
+|:---:|---|
+| `v2.0` | **Rediseno total**: tracker rutina + InDriver + metricas + voz |
+| `v2.0.1` | Fix scroll InDriver, listado de registros, voz solo numeros en k |
+| `v1.15` | Cache-busting |
+| `v1.14` | Service Worker network-first |
+| `v1.13` | Rutina dinamica (semana real) |
+| `v1.12` | Celebraciones + vibration |
+| `v1.11` | Rutina dinamica base |
+| `v1.10` | Polish UI |
+| `v1.8` | Rutina por etapas |
+| `v1.7` | Tabs + SVG |
+| `v1.6` | Rebranding a STREAK |
+| `v1.0–1.5` | Base: checklist, sonidos, respaldo, tema, PWA |
 
 > Detalle completo en [CHANGELOG.md](CHANGELOG.md)
 
@@ -161,14 +147,12 @@ Los datos se guardan en el navegador (`localStorage`). Puedes **exportar** un re
 
 ## Estado del proyecto
 
-Proyecto activo y en mejora continua.
-
-La version mas reciente es **`v1.15`**, publicada mediante GitHub Pages.
+Proyecto activo. Version actual: **v2.0.1** (2 julio 2026).
 
 <div align="center">
 
 ---
 
-**STREAK** - No rompas la cadena.
+**Rutina Diaria** — Un dia a la vez.
 
 </div>
